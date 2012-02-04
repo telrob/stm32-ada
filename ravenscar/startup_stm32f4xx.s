@@ -170,7 +170,7 @@ g_pfnVectors:
   .word  irq_handler_ada
   .word  irq_handler_ada
   .word  irq_handler_ada
-  .word  toto
+  .word  irq_handler_ada
   .word  irq_handler_ada
   .word  irq_handler_ada
   .word  irq_handler_ada

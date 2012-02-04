@@ -89,9 +89,6 @@ package body System.BB.Time is
       Now             : Time;
       Wakeup_Thread   : Threads.Thread_Id;
 
---      Status          : Unsigned_32;
---      pragma Unreferenced (Status);
-
       use type Threads.Thread_States;
 
    begin
@@ -99,9 +96,6 @@ package body System.BB.Time is
 
       Now := Cur_Time + 1;
       Cur_Time := Now;
-
-      --  Clear the interrupt.
---      Status := PITC_PIVR;
 
       --  The access to the queues must be protected
 
@@ -196,21 +190,11 @@ package body System.BB.Time is
    -----------------------
 
    procedure Initialize_Timers is
---      Pll_Frequency : constant := 50_000_000;
       procedure Setup_Systick (frequency : Integer);
       pragma Import (C, Setup_Systick, "setup_systick");
    begin
---      Interrupts.Disable_Interrupt (AT91C_ID_SYS);
-
---      PITC_PIMR := 16#0300_0000#
---        or Unsigned_32 ((Pll_Frequency / 16 / Ticks_Per_Second) - 1);
-
-      Interrupts.Attach_Handler
-        (Alarm_Handler'Access, 15);
-      --  Peripherals.Registers.AT91C_ID_SYS, 7);
+      Interrupts.Attach_Handler (Alarm_Handler'Access, 15);
       Setup_Systick (Ticks_Per_Second);
-
---      Interrupts.Enable_Interrupt (AT91C_ID_SYS);
    end Initialize_Timers;
 
 end System.BB.Time;

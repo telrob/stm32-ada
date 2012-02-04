@@ -61,19 +61,4 @@ package System.BB.Peripherals is
    --  Return number of clock ticks per second taking into account that the
    --  prescaler divides the system clock rate.
 
-   ----------------
-   -- Interrupts --
-   ----------------
-
---   function Priority_Of_Interrupt
---     (Level : SBP.Interrupt_Level) return System.Any_Priority;
---   pragma Inline (Priority_Of_Interrupt);
-   --  Function to obtain the priority associated with an interrupt. It returns
-   --  System.Any_Priority'First if Level is equal to zero (no interrupt).
-
---   function Level_Of_Interrupt
---     (Interrupt_Priority : System.Any_Priority) return SBP.Interrupt_Level;
-   --  Function to obtain level associated with an interrupt priority. It
-   --  returns System.Interrupt_Level'First if Priority is not defined.
-
 end System.BB.Peripherals;

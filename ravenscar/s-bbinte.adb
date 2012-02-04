@@ -57,9 +57,6 @@ package body System.BB.Interrupts is
    procedure Default_Isr (Id : Interrupt_ID);
    --  Default handlers.
 
---   function Context_Switch_Needed return Boolean;
---   pragma Import (Asm, Context_Switch_Needed, "context_switch_needed");
-
    ----------------
    -- Local data --
    ----------------
@@ -80,9 +77,6 @@ package body System.BB.Interrupts is
    pragma Export (C, Irq_Handler, "irq_handler_ada");
    --  This wrapper procedure is in charge of setting the appropriate
    --  software priorities before calling the user-defined handler.
-
-   procedure Toto;
-   pragma Export (C, Toto, "toto");
 
    --------------------
    -- Attach_Handler --
@@ -143,21 +137,6 @@ package body System.BB.Interrupts is
    -----------------------
    -- Interrupt_Wrapper --
    -----------------------
-
-   procedure Toto is
-      procedure NVIC_ClearPendingIRQ (IRQn : Integer);
-      pragma Import (C, NVIC_ClearPendingIRQ, "_NVIC_ClearPendingIRQ");
-      function NVIC_GetPendingIRQ (IRQn : Integer) return Interfaces.C.char;
-      pragma Import (C, NVIC_GetPendingIRQ, "_NVIC_GetPendingIRQ");
-
-      T : Interfaces.C.char;
-      pragma Warnings (Off, T);
-   begin
-      T := NVIC_GetPendingIRQ (44);
-      Irq_Handler;
-      T := NVIC_GetPendingIRQ (44);
-      NVIC_ClearPendingIRQ (44);
-   end Toto;
 
    procedure Irq_Handler
    is

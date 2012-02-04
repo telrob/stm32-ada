@@ -59,29 +59,9 @@ package body System.BB.Peripherals is
       Init;
    end Initialize_Board;
 
---   function Level_Of_Interrupt
---     (Interrupt_Priority : System.Any_Priority) return SBP.Interrupt_Level
---   is
---   begin
---      pragma Assert (Interrupt_Priority /= 0);
---
---      return SBP.Interrupt_Levels - Interrupt_Priority;
---   end Level_Of_Interrupt;
-
-   ---------------------------
-   -- Priority_Of_Interrupt --
-   ---------------------------
-
---   function Priority_Of_Interrupt
---     (Level : SBP.Interrupt_Level) return System.Any_Priority
---   is
---   begin
---      --  Assert that it is a real interrupt
---
---      pragma Assert (Level /= 0);
---
---      return System.Max_Interrupt_Priority - Level;
---   end Priority_Of_Interrupt;
+   ----------------------
+   -- Ticks_Per_Second --
+   ----------------------
 
    function Ticks_Per_Second return Natural is
    begin

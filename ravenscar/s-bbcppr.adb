@@ -59,23 +59,11 @@ package body System.BB.CPU_Primitives is
    use type SSE.Integer_Address;
    use type SSE.Storage_Offset;
 
---   Flag_F : constant Unsigned_32 := 2#0100_0000#;
---   Flag_I : constant Unsigned_32 := 2#1000_0000#;
-   --  Processor flags.
-
---   procedure Set_Cpsr_C (Val : Unsigned_32);
---   function Get_Cpsr return Unsigned_32;
-   --  Setting and getting processor flags.
-
    ----------------
    -- Local data --
    ----------------
 
-   --  jbte: Inversion a cause de thumb2, cf le .S
    SP  : constant Range_Of_Context :=  0;
---   SP  : constant Range_Of_Context :=  13;
---   LR  : constant Range_Of_Context :=  12;
---   Arg : constant Range_Of_Context :=  0;
 
    type Stack_Type is record
       R4 : Unsigned_32;
@@ -126,8 +114,6 @@ package body System.BB.CPU_Primitives is
       Stack : constant System.Address := Stack_Pointer - Default_Stack_Size;
    begin
       Buffer (SP) := Stack;
---      Buffer (LR) := Program_Counter;
---      Buffer (Arg) := Argument;
       Initialize_Stack (Stack, Program_Counter, Argument);
    end Initialize_Context;
 
@@ -142,30 +128,6 @@ package body System.BB.CPU_Primitives is
       null;
    end Initialize_Floating_Point;
 
-   --------------
-   -- Get_Cpsr --
-   --------------
-
---   function Get_Cpsr return Unsigned_32 is
---      Res : Unsigned_32;
---   begin
---      System.Machine_Code.Asm ("mrs %0,cpsr",
---                               Outputs => Unsigned_32'Asm_Output ("=r", Res),
---                               Volatile => True);
---      return Res;
---   end Get_Cpsr;
-
-   ----------------
-   -- Set_Cpsr_C --
-   ----------------
-
---   procedure Set_Cpsr_C (Val : Unsigned_32) is
---   begin
---      System.Machine_Code.Asm ("msr cpsr_c,%0",
---                               Inputs => Unsigned_32'Asm_Input ("r", Val),
---                               Volatile => True);
---   end Set_Cpsr_C;
-
    ------------------------
    -- Disable_Interrupts --
    ------------------------
@@ -176,7 +138,6 @@ package body System.BB.CPU_Primitives is
                                "cpsid f",
                                Clobber => "memory",
                                Volatile => True);
---      Set_Cpsr_C (Get_Cpsr or Flag_I or Flag_F);
    end Disable_Interrupts;
 
    -----------------------
@@ -192,7 +153,6 @@ package body System.BB.CPU_Primitives is
                                   "cpsie f",
                                   Clobber => "memory",
                                   Volatile => True);
---         Set_Cpsr_C (Get_Cpsr and not (Flag_I or Flag_F));
       end if;
    end Enable_Interrupts;
 
