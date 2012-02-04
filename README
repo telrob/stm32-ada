@@ -1,0 +1,4 @@
+To build and install gcc/ravenscar for stm32f4 DISCOVERY Board, update the
+instalation path in install.sh (first line) and run it.
+
+For more information, see http://www.telecom-robotics.org

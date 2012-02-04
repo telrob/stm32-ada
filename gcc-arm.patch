@@ -1,0 +1,215 @@
+diff -r aef3560e093f gcc/ada/adaint.c
+--- a/gcc/ada/adaint.c	Sun Dec 18 01:30:15 2011 +0100
++++ b/gcc/ada/adaint.c	Sun Dec 18 17:02:23 2011 +0100
+@@ -478,7 +478,7 @@
+ 		 size_t bufsiz ATTRIBUTE_UNUSED)
+ {
+ #if defined (_WIN32) || defined (VMS) \
+-    || defined(__vxworks) || defined (__nucleus__)
++    || defined(__vxworks) || defined (__nucleus__) || defined(__arm__)
+   return -1;
+ #else
+   return readlink (path, buf, bufsiz);
+@@ -494,7 +494,7 @@
+ 		char *newpath ATTRIBUTE_UNUSED)
+ {
+ #if defined (_WIN32) || defined (VMS) \
+-    || defined(__vxworks) || defined (__nucleus__)
++    || defined(__vxworks) || defined (__nucleus__) || defined (__arm__)
+   return -1;
+ #else
+   return symlink (oldpath, newpath);
+@@ -504,7 +504,7 @@
+ /* Try to lock a file, return 1 if success.  */
+ 
+ #if defined (__vxworks) || defined (__nucleus__) \
+-  || defined (_WIN32) || defined (VMS)
++  || defined (_WIN32) || defined (VMS) || defined(__arm__)
+ 
+ /* Version that does not use link. */
+ 
+@@ -628,6 +628,7 @@
+ void
+ __gnat_get_current_dir (char *dir, int *length)
+ {
++#ifndef __arm__
+ #if defined (__MINGW32__)
+   TCHAR wdir[GNAT_MAX_PATH_LEN];
+ 
+@@ -650,6 +651,7 @@
+        ++(*length);
+      }
+    dir[*length] = '\0';
++#endif
+ }
+ 
+ /* Return the suffix for object files.  */
+@@ -1213,6 +1215,7 @@
+ #endif
+ }
+ 
++#ifndef __arm__
+ /*  Open directory and returns a DIR pointer.  */
+ 
+ DIR* __gnat_opendir (char *name)
+@@ -1298,6 +1301,7 @@
+   return closedir (dirp);
+ #endif
+ }
++#endif
+ 
+ /* Returns 1 if readdir is thread safe, 0 otherwise.  */
+ 
+@@ -1416,7 +1420,7 @@
+ void
+ __gnat_set_file_time_name (char *name, time_t time_stamp)
+ {
+-#if defined (__vxworks)
++#if defined (__vxworks) || defined (__arm__)
+ 
+ /* Code to implement __gnat_set_file_time_name for these systems.  */
+ 
+@@ -2153,7 +2157,7 @@
+ 
+   SetFileAttributes
+     (wname, GetFileAttributes (wname) & ~FILE_ATTRIBUTE_READONLY);
+-#elif ! defined (__vxworks) && ! defined(__nucleus__)
++#elif ! defined (__vxworks) && ! defined(__nucleus__) && ! defined(__arm__)
+   GNAT_STRUCT_STAT statbuf;
+ 
+   if (GNAT_STAT (name, &statbuf) == 0)
+@@ -2175,7 +2179,7 @@
+   if (__gnat_can_use_acl (wname))
+     __gnat_set_OWNER_ACL (wname, GRANT_ACCESS, FILE_GENERIC_EXECUTE);
+ 
+-#elif ! defined (__vxworks) && ! defined(__nucleus__)
++#elif ! defined (__vxworks) && ! defined(__nucleus__) && ! defined(__arm__)
+   GNAT_STRUCT_STAT statbuf;
+ 
+   if (GNAT_STAT (name, &statbuf) == 0)
+diff -r aef3560e093f gcc/ada/adaint.h
+--- a/gcc/ada/adaint.h	Sun Dec 18 01:30:15 2011 +0100
++++ b/gcc/ada/adaint.h	Sun Dec 18 17:02:23 2011 +0100
+@@ -36,7 +36,9 @@
+ #include "mingw32.h"
+ #endif
+ 
++#ifndef __arm__
+ #include <dirent.h>
++#endif
+ 
+ /*  Constants used for the form parameter encoding values  */
+ #define Encoding_UTF8 0         /* UTF-8 */
+@@ -137,9 +139,11 @@
+ extern long   __gnat_file_length                   (int);
+ extern long   __gnat_named_file_length             (char *);
+ extern void   __gnat_tmp_name			   (char *);
++#ifndef __arm__
+ extern DIR   *__gnat_opendir                       (char *);
+ extern char  *__gnat_readdir                       (DIR *, char *, int *);
+ extern int    __gnat_closedir                      (DIR *);
++#endif
+ extern int    __gnat_readdir_is_thread_safe        (void);
+ 
+ extern OS_Time __gnat_file_time_name                (char *);
+diff -r aef3560e093f gcc/ada/gcc-interface/Makefile.in
+--- a/gcc/ada/gcc-interface/Makefile.in	Sun Dec 18 01:30:15 2011 +0100
++++ b/gcc/ada/gcc-interface/Makefile.in	Sun Dec 18 17:02:23 2011 +0100
+@@ -2196,6 +2196,12 @@
+   GCC_LINK_FLAGS=
+ endif
+ 
++ifeq ($(strip $(filter-out arm, $(arch))),)
++    # Disable sockets on arm
++    LIBGNAT_TARGET_PAIRS += $(DUMMY_SOCKETS_TARGET_PAIRS)
++    GNATRTL_SOCKETS_OBJS=
++endif
++
+ ifneq ($(EH_MECHANISM),)
+   LIBGNAT_TARGET_PAIRS += a-exexpr.adb<a-exexpr$(EH_MECHANISM).adb
+   EXTRA_LIBGNAT_SRCS+=raise$(EH_MECHANISM).c
+diff -r aef3560e093f gcc/ada/gsocket.h
+--- a/gcc/ada/gsocket.h	Sun Dec 18 01:30:15 2011 +0100
++++ b/gcc/ada/gsocket.h	Sun Dec 18 17:02:23 2011 +0100
+@@ -29,7 +29,7 @@
+  *                                                                          *
+  ****************************************************************************/
+ 
+-#if defined(__nucleus__) || defined(VTHREADS)
++#if defined(__nucleus__) || defined(VTHREADS) || defined(__arm__)
+ 
+ #warning Sockets not supported on these platforms
+ #undef HAVE_SOCKETS
+diff -r aef3560e093f gcc/ada/s-oscons-tmplt.c
+--- a/gcc/ada/s-oscons-tmplt.c	Sun Dec 18 01:30:15 2011 +0100
++++ b/gcc/ada/s-oscons-tmplt.c	Sun Dec 18 17:02:23 2011 +0100
+@@ -115,7 +115,7 @@
+ #endif
+ 
+ #if ! (defined (__vxworks) || defined (__VMS) || defined (__MINGW32__) || \
+-       defined (__nucleus__))
++       defined (__nucleus__) || defined (__arm__))
+ # define HAVE_TERMIOS
+ #endif
+ 
+diff -r aef3560e093f gcc/config/arm/t-arm-elf
+--- a/gcc/config/arm/t-arm-elf	Sun Dec 18 01:30:15 2011 +0100
++++ b/gcc/config/arm/t-arm-elf	Sun Dec 18 17:02:23 2011 +0100
+@@ -31,10 +31,54 @@
+ 	_arm_floatdidf _arm_floatdisf _arm_floatundidf _arm_floatundisf \
+ 	_clzsi2 _clzdi2 
+ 
+-MULTILIB_OPTIONS     = marm/mthumb
+-MULTILIB_DIRNAMES    = arm thumb
+-MULTILIB_EXCEPTIONS  = 
++# We build 4 multilibs:
++#  ./            (default)
++#  thumb/        -mthumb
++#  thumb2/       -mthumb -march=armv7
++#  armv4t/      -mthumb -march=armv4t
++
++MULTILIB_OPTIONS     = mthumb
++MULTILIB_DIRNAMES    = thumb
++MULTILIB_EXCEPTIONS  =
+ MULTILIB_MATCHES     =
++MULTILIB_EXTRA_OPTS  += msoft-float
++
++MULTILIB_OPTIONS      += march=armv7/march=armv4t
++MULTILIB_DIRNAMES     += v7 v4t
++MULTILIB_EXCEPTIONS   += march=armv7*
++MULTILIB_MATCHES      += march?armv7=march?armv7-a
++MULTILIB_MATCHES      += march?armv7=march?armv7-r
++MULTILIB_MATCHES      += march?armv7=march?armv7-m
++MULTILIB_MATCHES      += march?armv7=march?armv7e-m
++MULTILIB_MATCHES      += march?armv7=mcpu?cortex-a9
++MULTILIB_MATCHES      += march?armv7=mcpu?cortex-a8
++MULTILIB_MATCHES      += march?armv7=mcpu?cortex-a5
++MULTILIB_MATCHES      += march?armv7=mcpu?cortex-r4
++MULTILIB_MATCHES      += march?armv7=mcpu?cortex-r4f
++MULTILIB_MATCHES      += march?armv7=mcpu?cortex-m4
++MULTILIB_MATCHES      += march?armv7=mcpu?cortex-m3
++
++MULTILIB_EXCEPTIONS   += march=armv4t
++MULTILIB_MATCHES      += march?armv4t=mcpu?arm7tdmi-s
++#MULTILIB_MATCHES      +=
++
++# FIXME: We need a sane way of doing this.
++# This isn't really a multilib, it's a hack to add an extra option
++# to the v7-m multilib.
++MULTILIB_OPTIONS      += mfix-cortex-m3-ldrd
++MULTILIB_DIRNAMES     += broken_ldrd
++
++MULTILIB_EXCEPTIONS   += mfix-cortex-m3-ldrd
++MULTILIB_EXCEPTIONS   += mthumb/mfix-cortex-m3-ldrd
++MULTILIB_EXCEPTIONS   += *march=armv4t*mfix-cortex-m3-ldrd
++
++MULTILIB_ALIASES      += mthumb/march?armv7/mfix-cortex-m3-ldrd=mthumb/march?armv7
++
++# As of at least 4.2, gcc passes the wrong -L options if some multilibs are
++# omitted from MULTILIB_OSDIRNAMES
++MULTILIB_OSDIRNAMES    = mthumb=!thumb
++MULTILIB_OSDIRNAMES   += mthumb/march.armv7/mfix-cortex-m3-ldrd=!thumb2
++MULTILIB_OSDIRNAMES   += mthumb/march.armv4t=!armv4t
+ 
+ #MULTILIB_OPTIONS     += mcpu=fa526/mcpu=fa626/mcpu=fa606te/mcpu=fa626te/mcpu=fmp626/mcpu=fa726te
+ #MULTILIB_DIRNAMES    += fa526 fa626 fa606te fa626te fmp626 fa726te

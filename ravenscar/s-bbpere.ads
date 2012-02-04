@@ -1,0 +1,1439 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                  GNAT RUN-TIME LIBRARY (GNARL) COMPONENTS                --
+--                                                                          --
+--      S Y S T E M . B B . P E R I P H E R A L S . R E G I S T E R S       --
+--                                                                          --
+--                                  S p e c                                 --
+--                                                                          --
+--        Copyright (C) 1999-2002 Universidad Politecnica de Madrid         --
+--             Copyright (C) 2003-2006 The European Space Agency            --
+--                     Copyright (C) 2003-2011, AdaCore                     --
+--                                                                          --
+-- GNARL is free software; you can  redistribute it  and/or modify it under --
+-- terms of the  GNU General Public License as published  by the Free Soft- --
+-- ware  Foundation;  either version 2,  or (at your option) any later ver- --
+-- sion. GNARL is distributed in the hope that it will be useful, but WITH- --
+-- OUT ANY WARRANTY;  without even the  implied warranty of MERCHANTABILITY --
+-- or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License --
+-- for  more details.  You should have  received  a copy of the GNU General --
+-- Public License  distributed with GNARL; see file COPYING.  If not, write --
+-- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
+-- MA 02111-1307, USA.                                                      --
+--                                                                          --
+-- As a special exception,  if other files  instantiate  generics from this --
+-- unit, or you link  this unit with other files  to produce an executable, --
+-- this  unit  does not  by itself cause  the resulting  executable  to  be --
+-- covered  by the  GNU  General  Public  License.  This exception does not --
+-- however invalidate  any other reasons why  the executable file  might be --
+-- covered by the  GNU Public License.                                      --
+--                                                                          --
+-- GNARL was developed by the GNARL team at Florida State University.       --
+-- Extensive contributions were provided by Ada Core Technologies, Inc.     --
+--                                                                          --
+-- The porting of GNARL to bare board  targets was initially  developed  by --
+-- the Real-Time Systems Group at the Technical University of Madrid.       --
+--                                                                          --
+------------------------------------------------------------------------------
+
+--  This package provides the appropriate mapping for the system registers.
+
+pragma Restrictions (No_Elaboration_Code);
+
+with Interfaces;
+
+package System.BB.Peripherals.Registers is
+   pragma Preelaborate;
+
+   subtype Register_32 is Interfaces.Unsigned_32;
+
+--   --  Peripheral identifiers
+--
+--   AT91C_ID_FIQ  : constant := 0;
+--   AT91C_ID_SYS  : constant := 1;
+--   AT91C_ID_PIOA : constant := 2;
+--   AT91C_ID_ADC  : constant := 4;
+--   AT91C_ID_SPI  : constant := 5;
+--   AT91C_ID_US0  : constant := 6;
+--   AT91C_ID_US1  : constant := 7;
+--   AT91C_ID_SSC  : constant := 8;
+--   AT91C_ID_TWI  : constant := 9;
+--   AT91C_ID_PWMC : constant := 10;
+--   AT91C_ID_UDP  : constant := 11;
+--   AT91C_ID_TC0  : constant := 12;
+--   AT91C_ID_TC1  : constant := 13;
+--   AT91C_ID_TC2  : constant := 14;
+--   AT91C_ID_IRQ0 : constant := 30;
+--   AT91C_ID_IRQ1 : constant := 31;
+--
+--   --  AIC
+--
+--   --  AIC SMR.
+--
+--   type AIC_SMR_Array is array (0 .. 31) of Register_32;
+--   pragma Atomic_Components (AIC_SMR_Array);
+--   AIC_SMR : AIC_SMR_Array;
+--   for AIC_SMR'Address use System'To_Address (16#FFFF_F000#);
+--
+--   AIC_Lowest_Priority_Level       : constant := 0;
+--   AIC_Internal_Src_Edge_Triggered : constant := 32;
+--
+--   --  AIC SVR
+--
+--   type AIC_SVR_Array is array (0 .. 31) of Register_32;
+--   pragma Atomic_Components (AIC_SVR_Array);
+--   AIC_SVR : AIC_SVR_Array;
+--   for AIC_SVR'Address use System'To_Address (16#FFFF_F080#);
+--
+--   --  AIC IVR
+--
+--   AIC_IVR : Register_32;
+--   for AIC_IVR'Address use System'To_Address (16#FFFF_F100#);
+--   pragma Atomic (AIC_IVR);
+--
+--   --  AIC FVR
+--
+--   AIC_FVR : Register_32;
+--   for AIC_FVR'Address use System'To_Address (16#FFFF_F104#);
+--   pragma Atomic (AIC_FVR);
+--
+--   --  AIC ISR
+--
+--   AIC_ISR : Register_32;
+--   for AIC_ISR'Address use System'To_Address (16#FFFF_F108#);
+--   pragma Atomic (AIC_ISR);
+--
+--   --  AIC IPR
+--
+--   AIC_IPR : Register_32;
+--   for AIC_IPR'Address use System'To_Address (16#FFFF_F10C#);
+--   pragma Atomic (AIC_IPR);
+--
+--   --  AIC IMR
+--
+--   AIC_IMR : Register_32;
+--   for AIC_IMR'Address use System'To_Address (16#FFFF_F110#);
+--   pragma Atomic (AIC_IMR);
+--
+--   --  AIC CISR
+--
+--   AIC_CISR : Register_32;
+--   for AIC_CISR'Address use System'To_Address (16#FFFF_F114#);
+--   pragma Atomic (AIC_CISR);
+--
+--   --  AIC IECR
+--
+--   AIC_IECR : Register_32;
+--   for AIC_IECR'Address use System'To_Address (16#FFFF_F120#);
+--   pragma Atomic (AIC_IECR);
+--
+--   --  AIC IDCR
+--
+--   AIC_IDCR : Register_32;
+--   for AIC_IDCR'Address use System'To_Address (16#FFFF_F124#);
+--   pragma Atomic (AIC_IDCR);
+--
+--   --  AIC ICCR
+--
+--   AIC_ICCR : Register_32;
+--   for AIC_ICCR'Address use System'To_Address (16#FFFF_F128#);
+--   pragma Atomic (AIC_ICCR);
+--
+--   --  AIC ISCR
+--
+--   AIC_ISCR : Register_32;
+--   for AIC_ISCR'Address use System'To_Address (16#FFFF_F12C#);
+--   pragma Atomic (AIC_ISCR);
+--
+--   --  AIC EOICR
+--
+--   AIC_EOICR : Register_32;
+--   for AIC_EOICR'Address use System'To_Address (16#FFFF_F130#);
+--   pragma Atomic (AIC_EOICR);
+--
+--   --  AIC SPU
+--
+--   AIC_SPU : Register_32;
+--   for AIC_SPU'Address use System'To_Address (16#FFFF_F134#);
+--   pragma Atomic (AIC_SPU);
+--
+--   --  AIC DCR
+--
+--   AIC_DCR : Register_32;
+--   for AIC_DCR'Address use System'To_Address (16#FFFF_F138#);
+--   pragma Atomic (AIC_DCR);
+--
+--   --  AIC FFER
+--
+--   AIC_FFER : Register_32;
+--   for AIC_FFER'Address use System'To_Address (16#FFFF_F140#);
+--   pragma Atomic (AIC_FFER);
+--
+--   --  AIC FFDR
+--
+--   AIC_FFDR : Register_32;
+--   for AIC_FFDR'Address use System'To_Address (16#FFFF_F144#);
+--   pragma Atomic (AIC_FFDR);
+--
+--   --  AIC FFSR
+--
+--   AIC_FFSR : Register_32;
+--   for AIC_FFSR'Address use System'To_Address (16#FFFF_F148#);
+--   pragma Atomic (AIC_FFSR);
+--
+--   --  PITC
+--
+--   --  PITC MR
+--
+--   PITC_PIMR : Register_32;
+--   for PITC_PIMR'Address use System'To_Address (16#FFFF_FD30#);
+--   pragma Atomic (PITC_PIMR);
+--
+--   --  PITC SR
+--
+--   PITC_MISR : Register_32;
+--   for PITC_MISR'Address use System'To_Address (16#FFFF_FD34#);
+--   pragma Atomic (PITC_MISR);
+--
+--   --  PITC PIVR
+--
+--   PITC_PIVR : Register_32;
+--   for PITC_PIVR'Address use System'To_Address (16#FFFF_FD38#);
+--   pragma Atomic (PITC_PIVR);
+--
+--   --  PITC PIIR
+--
+--   PITC_PIIR : Register_32;
+--   for PITC_PIIR'Address use System'To_Address (16#FFFF_FD3C#);
+--   pragma Atomic (PITC_PIIR);
+--
+--   --  SSC
+--
+--   PA17_TD : constant := 2 ** 17; -- SSC_Transmit_Data
+--
+--   --  (SSC) Receive Holding Register
+--
+--   SSC_RHR : Register_32;
+--   for SSC_RHR'Address use System'To_Address (16#FFFD_4020#);
+--   pragma Atomic (SSC_RHR);
+--
+--   --  (SSC) Receive Sync Holding Register
+--
+--   SSC_RSHR : Register_32;
+--   for SSC_RSHR'Address use System'To_Address (16#FFFD_4030#);
+--   pragma Atomic (SSC_RSHR);
+--
+--   --  (SSC) Transmit Frame Mode Register
+--
+--   SSC_TFMR : Register_32;
+--   for SSC_TFMR'Address use System'To_Address (16#FFFD_401C#);
+--   pragma Atomic (SSC_TFMR);
+--
+--   --  (SSC) Interrupt Disable Register
+--
+--   SSC_IDR : Register_32;
+--   for SSC_IDR'Address use System'To_Address (16#FFFD_4048#);
+--   pragma Atomic (SSC_IDR);
+--
+--   --  (SSC) Transmit Holding Register
+--
+--   SSC_THR : Register_32;
+--   for SSC_THR'Address use System'To_Address (16#FFFD_4024#);
+--   pragma Atomic (SSC_THR);
+--
+--   --  (SSC) Receive Clock Mode Register
+--
+--   SSC_RCMR : Register_32;
+--   for SSC_RCMR'Address use System'To_Address (16#FFFD_4010#);
+--   pragma Atomic (SSC_RCMR);
+--
+--   SSC_Divided_Clock       : constant := 0; -- AT91C_SSC_CKS_DIV
+--   SSC_Continuous_Clock_RK : constant := 2 ** 2; -- AT91C_SSC_CKO_CONTINOUS
+--   SSC_Start_Continuous    : constant := 0; -- AT91C_SSC_START_CONTINOUS
+--
+--   --  (SSC) Interrupt Enable Register
+--
+--   SSC_IER : Register_32;
+--   for SSC_IER'Address use System'To_Address (16#FFFD_4044#);
+--   pragma Atomic (SSC_IER);
+--
+--   SSC_TXBUFE  : constant := 2 ** 3; --  SSC_Transmit_Buffer_Empty
+--   SSC_ENDTX   : constant := 2 ** 2; --  SSC_End_Of_Transmission
+--   SSC_TXEMPTY : constant := 2 ** 1; --  SSC_Transmit_Empty
+--
+--   --  (SSC) Transmit Sync Holding Register
+--
+--   SSC_TSHR : Register_32;
+--   for SSC_TSHR'Address use System'To_Address (16#FFFD_4034#);
+--   pragma Atomic (SSC_TSHR);
+--
+--   --  (SSC) Status Register
+--
+--   SSC_SR : Register_32;
+--   for SSC_SR'Address use System'To_Address (16#FFFD_4040#);
+--   pragma Atomic (SSC_SR);
+--
+--   --  (SSC) Clock Mode Register
+--
+--   SSC_CMR : Register_32;
+--   for SSC_CMR'Address use System'To_Address (16#FFFD_4004#);
+--   pragma Atomic (SSC_CMR);
+--
+--   --  (SSC) Transmit Clock Mode Register
+--
+--   SSC_TCMR : Register_32;
+--   for SSC_TCMR'Address use System'To_Address (16#FFFD_4018#);
+--   pragma Atomic (SSC_TCMR);
+--
+--   --  (SSC) Control Register
+--
+--   SSC_CR : Register_32;
+--   for SSC_CR'Address use System'To_Address (16#FFFD_4000#);
+--   pragma Atomic (SSC_CR);
+--
+--   SSC_RXEN  : constant := 2 ** 0;   -- SSC_Receive_Enable
+--   SSC_RXDIS : constant := 2 ** 1;   -- SSC_Receive_Disable
+--   SSC_TXEN  : constant := 2 ** 8;   -- SSC_Transmit_Enable
+--   SSC_TXDIS : constant := 2 ** 9;   -- SSC_Transmit_Disable
+--   SSC_SWRST : constant := 2 ** 15;  -- SSC_Software_Reset
+--
+--   --  (SSC) Interrupt Mask Register
+--
+--   SSC_IMR : Register_32;
+--   for SSC_IMR'Address use System'To_Address (16#FFFD_404C#);
+--   pragma Atomic (SSC_IMR);
+--
+--   --  (SSC) Receive Frame Mode Register
+--
+--   SSC_RFMR : Register_32;
+--   for SSC_RFMR'Address use System'To_Address (16#FFFD_4014#);
+--   pragma Atomic (SSC_RFMR);
+--
+--   SSC_MSBF : constant := 128; --  SSC_Most_Significant_Bit_First
+--
+--   --   (SSC)  Transmit Next Counter Register
+--
+--   SSC_TNCR : Register_32;
+--   for SSC_TNCR'Address use System'To_Address (16#FFFD_411C#);
+--   pragma Atomic (SSC_TNCR);
+--
+--   --   (SSC)  Receive Pointer Register
+--
+--   SSC_RPR : Register_32;
+--   for SSC_RPR'Address use System'To_Address (16#FFFD_4100#);
+--   pragma Atomic (SSC_RPR);
+--
+--   --   (SSC)  Receive Next Counter Register
+--
+--   SSC_RNCR : Register_32;
+--   for SSC_RNCR'Address use System'To_Address (16#FFFD_4114#);
+--   pragma Atomic (SSC_RNCR);
+--
+--   --   (SSC)  Transmit Pointer Register
+--
+--   SSC_TPR : Register_32;
+--   for SSC_TPR'Address use System'To_Address (16#FFFD_4108#);
+--   pragma Atomic (SSC_TPR);
+--
+--   --   (SSC)  PDC Transfer Control Register
+--
+--   SSC_PTCR : Register_32;
+--   for SSC_PTCR'Address use System'To_Address (16#FFFD_4120#);
+--   pragma Atomic (SSC_PTCR);
+--
+--   --   (SSC)  Transmit Counter Register
+--
+--   SSC_TCR : Register_32;
+--   for SSC_TCR'Address use System'To_Address (16#FFFD_410C#);
+--   pragma Atomic (SSC_TCR);
+--
+--   --   (SSC)  Receive Counter Register
+--
+--   SSC_RCR : Register_32;
+--   for SSC_RCR'Address use System'To_Address (16#FFFD_4104#);
+--   pragma Atomic (SSC_RCR);
+--
+--   --   (SSC)  Receive Next Pointer Register
+--
+--   SSC_RNPR : Register_32;
+--   for SSC_RNPR'Address use System'To_Address (16#FFFD_4110#);
+--   pragma Atomic (SSC_RNPR);
+--
+--   --   (SSC)  Transmit Next Pointer Register
+--
+--   SSC_TNPR : Register_32;
+--   for SSC_TNPR'Address use System'To_Address (16#FFFD_4118#);
+--   pragma Atomic (SSC_TNPR);
+--
+--   --   (SSC)  PDC Transfer Status Register
+--
+--   SSC_PTSR : Register_32;
+--   for SSC_PTSR'Address use System'To_Address (16#FFFD_4124#);
+--   pragma Atomic (SSC_PTSR);
+--
+--   --  TWI
+--
+--   --  TWI CR
+--
+--   TWI_CR : Register_32;
+--   for TWI_CR'Address use System'To_Address (16#FFFB_8000#);
+--   pragma Atomic (TWI_CR);
+--
+--   TWI_START : constant := 2 ** 0;
+--   TWI_STOP  : constant := 2 ** 1;
+--   TWI_MSEN  : constant := 2 ** 2;
+--   TWI_MSDIS : constant := 2 ** 3;
+--   TWI_SWRST : constant := 2 ** 7;
+--
+--   --  TWI MMR
+--
+--   TWI_MMR : Register_32;
+--   for TWI_MMR'Address use System'To_Address (16#FFFB_8004#);
+--   pragma Atomic (TWI_MMR);
+--
+--   TWI_MREAD : constant := 2 ** 12;
+--
+--   --  TWI IADR
+--
+--   TWI_IADR : Register_32;
+--   for TWI_IADR'Address use System'To_Address (16#FFFB_800C#);
+--   pragma Atomic (TWI_IADR);
+--
+--   --  TWI CWGR
+--
+--   TWI_CWGR : Register_32;
+--   for TWI_CWGR'Address use System'To_Address (16#FFFB_8010#);
+--   pragma Atomic (TWI_CWGR);
+--
+--   --  TWI SR
+--
+--   TWI_SR : Register_32;
+--   for TWI_SR'Address use System'To_Address (16#FFFB_8020#);
+--   pragma Atomic (TWI_SR);
+--
+--   TWI_TXCOMP : constant := 2 ** 0;
+--   TWI_RXRDY  : constant := 2 ** 1;
+--   TWI_TXRDY  : constant := 2 ** 2;
+--   TWI_NACK   : constant := 2 ** 8;
+--
+--   --  TWI IER
+--
+--   TWI_IER : Register_32;
+--   for TWI_IER'Address use System'To_Address (16#FFFB_8024#);
+--   pragma Atomic (TWI_IER);
+--
+--   --  TWI IDR
+--
+--   TWI_IDR : Register_32;
+--   for TWI_IDR'Address use System'To_Address (16#FFFB_8028#);
+--   pragma Atomic (TWI_IDR);
+--
+--   --  TWI IMR
+--
+--   TWI_IMR : Register_32;
+--   for TWI_IMR'Address use System'To_Address (16#FFFB_802C#);
+--   pragma Atomic (TWI_IMR);
+--
+--   --  TWI RHR
+--
+--   TWI_RHR : Register_32;
+--   for TWI_RHR'Address use System'To_Address (16#FFFB_8030#);
+--   pragma Atomic (TWI_RHR);
+--
+--   --  TWI THR
+--
+--   TWI_THR : Register_32;
+--   for TWI_THR'Address use System'To_Address (16#FFFB_8034#);
+--   pragma Atomic (TWI_THR);
+--
+--   --  PMC
+--
+--   --  PMC SCER
+--
+--   PMC_SCER : Register_32;
+--   for PMC_SCER'Address use System'To_Address (16#FFFF_FC00#);
+--   pragma Atomic (PMC_SCER);
+--
+--   --  PMC SCDR
+--
+--   PMC_SCDR : Register_32;
+--   for PMC_SCDR'Address use System'To_Address (16#FFFF_FC04#);
+--   pragma Atomic (PMC_SCDR);
+--
+--   --  PMC SCSR
+--
+--   PMC_SCSR : Register_32;
+--   for PMC_SCSR'Address use System'To_Address (16#FFFF_FC08#);
+--   pragma Atomic (PMC_SCSR);
+--
+--   --  PMC PCER
+--
+--   PMC_PCER : Register_32;
+--   for PMC_PCER'Address use System'To_Address (16#FFFF_FC10#);
+--   pragma Atomic (PMC_PCER);
+--
+--   --  PMC PCDR
+--
+--   PMC_PCDR : Register_32;
+--   for PMC_PCDR'Address use System'To_Address (16#FFFF_FC14#);
+--   pragma Atomic (PMC_PCDR);
+--
+--   --  PMC PCSR
+--
+--   PMC_PCSR : Register_32;
+--   for PMC_PCSR'Address use System'To_Address (16#FFFF_FC18#);
+--   pragma Atomic (PMC_PCSR);
+--
+--   --  CKGR MOR
+--
+--   CKGR_MOR : Register_32;
+--   for CKGR_MOR'Address use System'To_Address (16#FFFF_FC20#);
+--   pragma Atomic (CKGR_MOR);
+--
+--   --  CKGR MCFR
+--
+--   CKGR_MCFR : Register_32;
+--   for CKGR_MCFR'Address use System'To_Address (16#FFFF_FC24#);
+--   pragma Atomic (CKGR_MCFR);
+--
+--   --  CKGR PLLR
+--
+--   CKGR_PLLR : Register_32;
+--   for CKGR_PLLR'Address use System'To_Address (16#FFFF_FC2c#);
+--   pragma Atomic (CKGR_PLLR);
+--
+--   --  PMC MCKR
+--
+--   PMC_MCKR : Register_32;
+--   for PMC_MCKR'Address use System'To_Address (16#FFFF_FC30#);
+--   pragma Atomic (PMC_MCKR);
+--
+--   --  PMC PCK0
+--
+--   PMC_PCK0 : Register_32;
+--   for PMC_PCK0'Address use System'To_Address (16#FFFF_FC40#);
+--   pragma Atomic (PMC_PCK0);
+--
+--   --  PMC PCK1
+--
+--   PMC_PCK1 : Register_32;
+--   for PMC_PCK1'Address use System'To_Address (16#FFFF_FC44#);
+--   pragma Atomic (PMC_PCK1);
+--
+--   --  PMC PCK2
+--
+--   PMC_PCK2 : Register_32;
+--   for PMC_PCK2'Address use System'To_Address (16#FFFF_FC48#);
+--   pragma Atomic (PMC_PCK2);
+--
+--   --  PMC IER
+--
+--   PMC_IER : Register_32;
+--   for PMC_IER'Address use System'To_Address (16#FFFF_FC60#);
+--   pragma Atomic (PMC_IER);
+--
+--   --  PMC IDR
+--
+--   PMC_IDR : Register_32;
+--   for PMC_IDR'Address use System'To_Address (16#FFFF_FC64#);
+--   pragma Atomic (PMC_IDR);
+--
+--   --  PMC SR
+--
+--   PMC_SR : Register_32;
+--   for PMC_SR'Address use System'To_Address (16#FFFF_FC68#);
+--   pragma Atomic (PMC_SR);
+--
+--   --  PMC IMR
+--
+--   PMC_IMR : Register_32;
+--   for PMC_IMR'Address use System'To_Address (16#FFFF_FC6C#);
+--   pragma Atomic (PMC_IMR);
+--
+--   --  PIOA
+--
+--   PIO_PA0  : constant := 2 ** 0;
+--   PIO_PA1  : constant := 2 ** 1;
+--   PIO_PA2  : constant := 2 ** 2;
+--   PIO_PA3  : constant := 2 ** 3;
+--   PIO_PA4  : constant := 2 ** 4;
+--   PIO_PA5  : constant := 2 ** 5;
+--   PIO_PA6  : constant := 2 ** 6;
+--   PIO_PA7  : constant := 2 ** 7;
+--   PIO_PA8  : constant := 2 ** 8;
+--   PIO_PA9  : constant := 2 ** 9;
+--   PIO_PA10 : constant := 2 ** 10;
+--   PIO_PA11 : constant := 2 ** 11;
+--   PIO_PA12 : constant := 2 ** 12;
+--   PIO_PA13 : constant := 2 ** 13;
+--   PIO_PA14 : constant := 2 ** 14;
+--   PIO_PA15 : constant := 2 ** 15;
+--   PIO_PA16 : constant := 2 ** 16;
+--   PIO_PA17 : constant := 2 ** 17;
+--   PIO_PA18 : constant := 2 ** 18;
+--   PIO_PA19 : constant := 2 ** 19;
+--   PIO_PA20 : constant := 2 ** 20;
+--   PIO_PA21 : constant := 2 ** 21;
+--   PIO_PA22 : constant := 2 ** 22;
+--   PIO_PA23 : constant := 2 ** 23;
+--   PIO_PA24 : constant := 2 ** 24;
+--   PIO_PA25 : constant := 2 ** 25;
+--   PIO_PA26 : constant := 2 ** 26;
+--   PIO_PA27 : constant := 2 ** 27;
+--   PIO_PA28 : constant := 2 ** 28;
+--   PIO_PA29 : constant := 2 ** 29;
+--   PIO_PA30 : constant := 2 ** 30;
+--   PIO_PA31 : constant := 2 ** 31;
+--
+--   --  PIO PER
+--
+--   PIOA_PER : Register_32;
+--   for PIOA_PER'Address use System'To_Address (16#FFFF_F400#);
+--   pragma Atomic (PIOA_PER);
+--
+--   --  PIO PDR
+--
+--   PIOA_PDR : Register_32;
+--   for PIOA_PDR'Address use System'To_Address (16#FFFF_F404#);
+--   pragma Atomic (PIOA_PDR);
+--
+--   --  PIO PSR
+--
+--   PIOA_PSR : Register_32;
+--   for PIOA_PSR'Address use System'To_Address (16#FFFF_F408#);
+--   pragma Atomic (PIOA_PSR);
+--
+--   --  PIO OER
+--
+--   PIOA_OER : Register_32;
+--   for PIOA_OER'Address use System'To_Address (16#FFFF_F410#);
+--   pragma Atomic (PIOA_OER);
+--
+--   --  PIO ODR
+--
+--   PIOA_ODR : Register_32;
+--   for PIOA_ODR'Address use System'To_Address (16#FFFF_F414#);
+--   pragma Atomic (PIOA_ODR);
+--
+--   --  PIO OSR
+--
+--   PIOA_OSR : Register_32;
+--   for PIOA_OSR'Address use System'To_Address (16#FFFF_F418#);
+--   pragma Atomic (PIOA_OSR);
+--
+--   --  PIO IFER
+--
+--   PIOA_IFER : Register_32;
+--   for PIOA_IFER'Address use System'To_Address (16#FFFF_F420#);
+--   pragma Atomic (PIOA_IFER);
+--
+--   --  PIO IFDR
+--
+--   PIOA_IFDR : Register_32;
+--   for PIOA_IFDR'Address use System'To_Address (16#FFFF_F424#);
+--   pragma Atomic (PIOA_IFDR);
+--
+--   --  PIO IFSR
+--
+--   PIOA_IFSR : Register_32;
+--   for PIOA_IFSR'Address use System'To_Address (16#FFFF_F428#);
+--   pragma Atomic (PIOA_IFSR);
+--
+--   --  PIO SODR
+--
+--   PIOA_SODR : Register_32;
+--   for PIOA_SODR'Address use System'To_Address (16#FFFF_F430#);
+--   pragma Atomic (PIOA_SODR);
+--
+--   --  PIO CODR
+--
+--   PIOA_CODR : Register_32;
+--   for PIOA_CODR'Address use System'To_Address (16#FFFF_F434#);
+--   pragma Atomic (PIOA_CODR);
+--
+--   --  PIO ODSR
+--
+--   PIOA_ODSR : Register_32;
+--   for PIOA_ODSR'Address use System'To_Address (16#FFFF_F438#);
+--   pragma Atomic (PIOA_ODSR);
+--
+--   --  PIO PDSR
+--
+--   PIOA_PDSR : Register_32;
+--   for PIOA_PDSR'Address use System'To_Address (16#FFFF_F43C#);
+--   pragma Atomic (PIOA_PDSR);
+--
+--   --  PIO IER
+--
+--   PIOA_IER : Register_32;
+--   for PIOA_IER'Address use System'To_Address (16#FFFF_F440#);
+--   pragma Atomic (PIOA_IER);
+--
+--   --  PIO IDR
+--
+--   PIOA_IDR : Register_32;
+--   for PIOA_IDR'Address use System'To_Address (16#FFFF_F444#);
+--   pragma Atomic (PIOA_IDR);
+--
+--   --  PIO IMR
+--
+--   PIOA_IMR : Register_32;
+--   for PIOA_IMR'Address use System'To_Address (16#FFFF_F448#);
+--   pragma Atomic (PIOA_IMR);
+--
+--   --  PIO ISR
+--
+--   PIOA_ISR : Register_32;
+--   for PIOA_ISR'Address use System'To_Address (16#FFFF_F44C#);
+--   pragma Atomic (PIOA_ISR);
+--
+--   --  PIO MDER
+--
+--   PIOA_MDER : Register_32;
+--   for PIOA_MDER'Address use System'To_Address (16#FFFF_F450#);
+--   pragma Atomic (PIOA_MDER);
+--
+--   --  PIO MDDR
+--
+--   PIOA_MDDR : Register_32;
+--   for PIOA_MDDR'Address use System'To_Address (16#FFFF_F454#);
+--   pragma Atomic (PIOA_MDDR);
+--
+--   --  PIO MDSR
+--
+--   PIOA_MDSR : Register_32;
+--   for PIOA_MDSR'Address use System'To_Address (16#FFFF_F458#);
+--   pragma Atomic (PIOA_MDSR);
+--
+--   --  PIO PUDR
+--
+--   PIOA_PUDR : Register_32;
+--   for PIOA_PUDR'Address use System'To_Address (16#FFFF_F460#);
+--   pragma Atomic (PIOA_PUDR);
+--
+--   --  PIO PUER
+--
+--   PIOA_PUER : Register_32;
+--   for PIOA_PUER'Address use System'To_Address (16#FFFF_F464#);
+--   pragma Atomic (PIOA_PUER);
+--
+--   --  PIO PUSR
+--
+--   PIOA_PUSR : Register_32;
+--   for PIOA_PUSR'Address use System'To_Address (16#FFFF_F468#);
+--   pragma Atomic (PIOA_PUSR);
+--
+--   --  PIO ASR
+--
+--   PIOA_ASR : Register_32;
+--   for PIOA_ASR'Address use System'To_Address (16#FFFF_F470#);
+--   pragma Atomic (PIOA_ASR);
+--
+--   --  PIO BSR
+--
+--   PIOA_BSR : Register_32;
+--   for PIOA_BSR'Address use System'To_Address (16#FFFF_F474#);
+--   pragma Atomic (PIOA_BSR);
+--
+--   --  PIO ABSR
+--
+--   PIOA_ABSR : Register_32;
+--   for PIOA_ABSR'Address use System'To_Address (16#FFFF_F478#);
+--   pragma Atomic (PIOA_ABSR);
+--
+--   --  PIO OWER
+--
+--   PIOA_OWER : Register_32;
+--   for PIOA_OWER'Address use System'To_Address (16#FFFF_F4A0#);
+--   pragma Atomic (PIOA_OWER);
+--
+--   --  PIO OWDR
+--
+--   PIOA_OWDR : Register_32;
+--   for PIOA_OWDR'Address use System'To_Address (16#FFFF_F4A4#);
+--   pragma Atomic (PIOA_OWDR);
+--
+--   --  PIO OWSR
+--
+--   PIOA_OWSR : Register_32;
+--   for PIOA_OWSR'Address use System'To_Address (16#FFFF_F4A8#);
+--   pragma Atomic (PIOA_OWSR);
+--
+--   --  SPI
+--
+--   --  SPI CR
+--
+--   SPI_CR : Register_32;
+--   for SPI_CR'Address use System'To_Address (16#FFFE_0000#);
+--   pragma Atomic (SPI_CR);
+--
+--   SPI_SPIEN  : constant := 2 ** 0;
+--   SPI_SPIDIS : constant := 2 ** 1;
+--   SPI_SWRST  : constant := 2 ** 7;
+--
+--   --  SPI MR
+--
+--   SPI_MR : Register_32;
+--   for SPI_MR'Address use System'To_Address (16#FFFE_0004#);
+--   pragma Atomic (SPI_MR);
+--
+--   SPI_MSTR   : constant := 2 ** 0;
+--   SPI_DLYBCS : constant := 2 ** 24;
+--
+--   --  SPI RDR
+--
+--   SPI_RDR : Register_32;
+--   for SPI_RDR'Address use System'To_Address (16#FFFE_0008#);
+--   pragma Atomic (SPI_RDR);
+--
+--   --  SPI TDR
+--
+--   SPI_TDR : Register_32;
+--   for SPI_TDR'Address use System'To_Address (16#FFFE_000C#);
+--   pragma Atomic (SPI_TDR);
+--
+--   --  SPI SR
+--
+--   SPI_SR : Register_32;
+--   for SPI_SR'Address use System'To_Address (16#FFFE_0010#);
+--   pragma Atomic (SPI_SR);
+--
+--   SPI_ENDTX : constant := 2 ** 5;
+--   SPI_TXEMPTY : constant := 2 ** 9;
+--
+--   --  SPI IER
+--
+--   SPI_IER : Register_32;
+--   for SPI_IER'Address use System'To_Address (16#FFFE_0014#);
+--   pragma Atomic (SPI_IER);
+--
+--   --  SPI IDR
+--
+--   SPI_IDR : Register_32;
+--   for SPI_IDR'Address use System'To_Address (16#FFFE_0018#);
+--   pragma Atomic (SPI_IDR);
+--
+--   --  SPI IMR
+--
+--   SPI_IMR : Register_32;
+--   for SPI_IMR'Address use System'To_Address (16#FFFE_001C#);
+--   pragma Atomic (SPI_IMR);
+--
+--   --  SPI CSR0
+--
+--   SPI_CSR0 : Register_32;
+--   for SPI_CSR0'Address use System'To_Address (16#FFFE_0030#);
+--   pragma Atomic (SPI_CSR0);
+--
+--   --  SPI CSR1
+--
+--   SPI_CSR1 : Register_32;
+--   for SPI_CSR1'Address use System'To_Address (16#FFFE_0034#);
+--   pragma Atomic (SPI_CSR1);
+--
+--   --  SPI CSR2
+--
+--   SPI_CSR2 : Register_32;
+--   for SPI_CSR2'Address use System'To_Address (16#FFFE_0038#);
+--   pragma Atomic (SPI_CSR2);
+--
+--   --  SPI CSR3
+--
+--   SPI_CSR3 : Register_32;
+--   for SPI_CSR3'Address use System'To_Address (16#FFFE_003C#);
+--   pragma Atomic (SPI_CSR3);
+--
+--   --  SPI (PDC) RPR
+--
+--   SPI_RPR : Register_32;
+--   for SPI_RPR'Address use System'To_Address (16#FFFE_0100#);
+--   pragma Atomic (SPI_RPR);
+--
+--   --  SPI (PDC) RCR
+--
+--   SPI_RCR : Register_32;
+--   for SPI_RCR'Address use System'To_Address (16#FFFE_0104#);
+--   pragma Atomic (SPI_RCR);
+--
+--   --  SPI (PDC) TPR
+--
+--   SPI_TPR : Register_32;
+--   for SPI_TPR'Address use System'To_Address (16#FFFE_0108#);
+--   pragma Atomic (SPI_TPR);
+--
+--   --  SPI (PDC) TCR
+--
+--   SPI_TCR : Register_32;
+--   for SPI_TCR'Address use System'To_Address (16#FFFE_010C#);
+--   pragma Atomic (SPI_TCR);
+--
+--   --  SPI (PDC) RNPR
+--
+--   SPI_RNPR : Register_32;
+--   for SPI_RNPR'Address use System'To_Address (16#FFFE_0110#);
+--   pragma Atomic (SPI_RNPR);
+--
+--   --  SPI (PDC) RNCR
+--
+--   SPI_RNCR : Register_32;
+--   for SPI_RNCR'Address use System'To_Address (16#FFFE_0114#);
+--   pragma Atomic (SPI_RNCR);
+--
+--   --  SPI (PDC) TNPR
+--
+--   SPI_TNPR : Register_32;
+--   for SPI_TNPR'Address use System'To_Address (16#FFFE_0118#);
+--   pragma Atomic (SPI_TNPR);
+--
+--   --  SPI (PDC) TNCR
+--
+--   SPI_TNCR : Register_32;
+--   for SPI_TNCR'Address use System'To_Address (16#FFFE_011C#);
+--   pragma Atomic (SPI_TNCR);
+--
+--   --  SPI (PDC) PTCR
+--
+--   SPI_PTCR : Register_32;
+--   for SPI_PTCR'Address use System'To_Address (16#FFFE_0120#);
+--   pragma Atomic (SPI_PTCR);
+--
+--   SPI_TXTEN : constant := 2 ** 8;
+--
+--   --  SPI (PDC) PTSR
+--
+--   SPI_PTSR : Register_32;
+--   for SPI_PTSR'Address use System'To_Address (16#FFFE_0124#);
+--   pragma Atomic (SPI_PTSR);
+--
+--   --  ADC
+--
+--   --  ADC CR
+--
+--   ADC_CR : Register_32;
+--   for ADC_CR'Address use System'To_Address (16#FFFD_8000#);
+--   pragma Atomic (ADC_CR);
+--
+--   ADC_SWRST : constant := 2 ** 0; -- ADC Software Reset
+--   ADC_START : constant := 2 ** 1; -- ADC Start Conversion
+--
+--   --  ADC MR
+--
+--   ADC_MR : Register_32;
+--   for ADC_MR'Address use System'To_Address (16#FFFD_8004#);
+--   pragma Atomic (ADC_MR);
+--
+--   ADC_TRGEN_EN : constant := 1; -- (ADC) Hardware trigger selected by TRGSEL
+--                                 --  field is enabled.
+--   ADC_TRGSEL_TIOA1 : constant := 2 ** 1;  --  (ADC) Selected TRGSEL = TIAO1
+--
+--   --  ADC CHER
+--
+--   ADC_CHER : Register_32;
+--   for ADC_CHER'Address use System'To_Address (16#FFFD_8010#);
+--   pragma Atomic (ADC_CHER);
+--
+--   ADC_CH0 : constant := 2 ** 0;  --  (ADC) Channel 0
+--   ADC_CH1 : constant := 2 ** 1;  --  (ADC) Channel 1
+--   ADC_CH2 : constant := 2 ** 2;  --  (ADC) Channel 2
+--   ADC_CH3 : constant := 2 ** 3;  --  (ADC) Channel 3
+--   ADC_CH4 : constant := 2 ** 4;  --  (ADC) Channel 4
+--   ADC_CH5 : constant := 2 ** 5;  --  (ADC) Channel 5
+--   ADC_CH6 : constant := 2 ** 6;  --  (ADC) Channel 6
+--   ADC_CH7 : constant := 2 ** 7;  --  (ADC) Channel 7
+--
+--   --  ADC CHDR
+--
+--   ADC_CHDR : Register_32;
+--   for ADC_CHDR'Address use System'To_Address (16#FFFD_8014#);
+--   pragma Atomic (ADC_CHDR);
+--
+--   --  ADC CHSR
+--
+--   ADC_CHSR : Register_32;
+--   for ADC_CHSR'Address use System'To_Address (16#FFFD_8018#);
+--   pragma Atomic (ADC_CHSR);
+--
+--   --  ADC SR
+--
+--   ADC_SR : Register_32;
+--   for ADC_SR'Address use System'To_Address (16#FFFD_801C#);
+--   pragma Atomic (ADC_SR);
+--
+--   --  ADC LCDR
+--
+--   ADC_LCDR : Register_32;
+--   for ADC_LCDR'Address use System'To_Address (16#FFFD_8020#);
+--   pragma Atomic (ADC_LCDR);
+--
+--   --  ADC IER
+--
+--   ADC_IER : Register_32;
+--   for ADC_IER'Address use System'To_Address (16#FFFD_8024#);
+--   pragma Atomic (ADC_IER);
+--
+--   --  ADC IDR
+--
+--   ADC_IDR : Register_32;
+--   for ADC_IDR'Address use System'To_Address (16#FFFD_8028#);
+--   pragma Atomic (ADC_IDR);
+--
+--   --  ADC IMR
+--
+--   ADC_IMR : Register_32;
+--   for ADC_IMR'Address use System'To_Address (16#FFFD_802C#);
+--   pragma Atomic (ADC_IMR);
+--
+--   --  ADC CDR
+--
+--   ADC_CDR : array (0 .. 7) of Register_32;
+--   for ADC_CDR'Address use System'To_Address (16#FFFD_8030#);
+--   pragma Atomic_Components (ADC_CDR);
+--
+--   --  ADC CDR0
+--
+--   ADC_CDR0 : Register_32;
+--   for ADC_CDR0'Address use System'To_Address (16#FFFD_8030#);
+--   pragma Atomic (ADC_CDR0);
+--
+--   --  ADC CDR1
+--
+--   ADC_CDR1 : Register_32;
+--   for ADC_CDR1'Address use System'To_Address (16#FFFD_8034#);
+--   pragma Atomic (ADC_CDR1);
+--
+--   --  ADC CDR2
+--
+--   ADC_CDR2 : Register_32;
+--   for ADC_CDR2'Address use System'To_Address (16#FFFD_8038#);
+--   pragma Atomic (ADC_CDR2);
+--
+--   --  ADC CDR3
+--
+--   ADC_CDR3 : Register_32;
+--   for ADC_CDR3'Address use System'To_Address (16#FFFD_803C#);
+--   pragma Atomic (ADC_CDR3);
+--
+--   --  ADC CDR4
+--
+--   ADC_CDR4 : Register_32;
+--   for ADC_CDR4'Address use System'To_Address (16#FFFD_8040#);
+--   pragma Atomic (ADC_CDR4);
+--
+--   --  ADC CDR5
+--
+--   ADC_CDR5 : Register_32;
+--   for ADC_CDR5'Address use System'To_Address (16#FFFD_8044#);
+--   pragma Atomic (ADC_CDR5);
+--
+--   --  ADC CDR6
+--
+--   ADC_CDR6 : Register_32;
+--   for ADC_CDR6'Address use System'To_Address (16#FFFD_8048#);
+--   pragma Atomic (ADC_CDR6);
+--
+--   --  ADC CDR7
+--
+--   ADC_CDR7 : Register_32;
+--   for ADC_CDR7'Address use System'To_Address (16#FFFD_804C#);
+--   pragma Atomic (ADC_CDR7);
+--
+--   --  UDP
+--
+--   --  UDP FRM_NUM
+--
+--   UDP_FRM_NUM : Register_32;
+--   for UDP_FRM_NUM'Address use System'To_Address (16#FFFB_0000#);
+--   pragma Atomic (UDP_FRM_NUM);
+--
+--   --  UDP GLB_STAT
+--
+--   UDP_GLB_STAT : Register_32;
+--   for UDP_GLB_STAT'Address use System'To_Address (16#FFFB_0004#);
+--   pragma Atomic (UDP_GLB_STAT);
+--
+--   UDP_FADDEN : constant := 2 ** 0;
+--   UDP_CONFG  : constant := 2 ** 1;
+--
+--   --  UDP FADDR
+--
+--   UDP_FADDR : Register_32;
+--   for UDP_FADDR'Address use System'To_Address (16#FFFB_0008#);
+--   pragma Atomic (UDP_FADDR);
+--
+--   UDP_FEN : constant := 2 ** 8;
+--
+--   --  UDP IER
+--
+--   UDP_IER : Register_32;
+--   for UDP_IER'Address use System'To_Address (16#FFFB_0010#);
+--   pragma Atomic (UDP_IER);
+--
+--   --  UDP IDR
+--
+--   UDP_IDR : Register_32;
+--   for UDP_IDR'Address use System'To_Address (16#FFFB_0014#);
+--   pragma Atomic (UDP_IDR);
+--
+--   --  UDP IMR
+--
+--   UDP_IMR : Register_32;
+--   for UDP_IMR'Address use System'To_Address (16#FFFB_0018#);
+--   pragma Atomic (UDP_IMR);
+--
+--   --  UDP ISR
+--
+--   UDP_ISR : Register_32;
+--   for UDP_ISR'Address use System'To_Address (16#FFFB_001C#);
+--   pragma Atomic (UDP_ISR);
+--
+--   UDP_WAKEUP    : constant := 2 ** 13;
+--   UDP_ENDBUSRES : constant := 2 ** 12;
+--   UDP_SOFINT    : constant := 2 ** 11;
+--   UDP_RXRSM     : constant := 2 ** 9;
+--   UDP_RXSUSP    : constant := 2 ** 8;
+--   UDP_EP3       : constant := 2 ** 3;
+--   UDP_EP2       : constant := 2 ** 2;
+--   UDP_EP1       : constant := 2 ** 1;
+--   UDP_EP0       : constant := 2 ** 0;
+--
+--   --  UDP ICR
+--
+--   UDP_ICR : Register_32;
+--   for UDP_ICR'Address use System'To_Address (16#FFFB_0020#);
+--   pragma Atomic (UDP_ICR);
+--
+--   --  UDP RST_EP
+--
+--   UDP_RST_EP : Register_32;
+--   for UDP_RST_EP'Address use System'To_Address (16#FFFB_0028#);
+--   pragma Atomic (UDP_RST_EP);
+--
+--   --  UDP CSR0
+--
+--   UDP_CSR0 : Register_32;
+--   for UDP_CSR0'Address use System'To_Address (16#FFFB_0030#);
+--   pragma Atomic (UDP_CSR0);
+--
+--   UDP_EPEDS           : constant := 2 ** 15;
+--   UDP_DTGLE           : constant := 2 ** 11;
+--   UDP_EPTYPE_CTRL     : constant := 0 * 2 ** 8;
+--   UDP_EPTYPE_ISO_OUT  : constant := 1 * 2 ** 8;
+--   UDP_EPTYPE_ISO_IN   : constant := 5 * 2 ** 8;
+--   UDP_EPTYPE_BULK_OUT : constant := 2 * 2 ** 8;
+--   UDP_EPTYPE_BULK_IN  : constant := 6 * 2 ** 8;
+--   UDP_EPTYPE_INT_OUT  : constant := 3 * 2 ** 8;
+--   UDP_EPTYPE_INT_IN   : constant := 7 * 2 ** 8;
+--   UDP_DIR             : constant := 2 ** 7;
+--   UDP_RX_DATA_BK1 : constant := 2 ** 6;
+--   UDP_FORCE_STALL : constant := 2 ** 5;
+--   UDP_TXPKTRDY    : constant := 2 ** 4;
+--   UDP_STALLSENT   : constant := 2 ** 3;
+--   UDP_ISOERROR    : constant := 2 ** 3;
+--   UDP_RXSETUP     : constant := 2 ** 2;
+--   UDP_RX_DATA_BK0 : constant := 2 ** 1;
+--   UDP_TXCOMP      : constant := 2 ** 0;
+--
+--   --  UDP CSR1
+--
+--   UDP_CSR1 : Register_32;
+--   for UDP_CSR1'Address use System'To_Address (16#FFFB_0034#);
+--   pragma Atomic (UDP_CSR1);
+--
+--   --  UDP CSR2
+--
+--   UDP_CSR2 : Register_32;
+--   for UDP_CSR2'Address use System'To_Address (16#FFFB_0038#);
+--   pragma Atomic (UDP_CSR2);
+--
+--   --  UDP CSR3
+--
+--   UDP_CSR3 : Register_32;
+--   for UDP_CSR3'Address use System'To_Address (16#FFFB_003C#);
+--   pragma Atomic (UDP_CSR3);
+--
+--   --  UDP FDR0
+--
+--   UDP_FDR0 : Register_32;
+--   for UDP_FDR0'Address use System'To_Address (16#FFFB_0050#);
+--   pragma Atomic (UDP_FDR0);
+--
+--   --  UDP FDR1
+--
+--   UDP_FDR1 : Register_32;
+--   for UDP_FDR1'Address use System'To_Address (16#FFFB_0054#);
+--   pragma Atomic (UDP_FDR1);
+--
+--   --  UDP FDR2
+--
+--   UDP_FDR2 : Register_32;
+--   for UDP_FDR2'Address use System'To_Address (16#FFFB_0058#);
+--   pragma Atomic (UDP_FDR2);
+--
+--   --  UDP FDR3
+--
+--   UDP_FDR3 : Register_32;
+--   for UDP_FDR3'Address use System'To_Address (16#FFFB_005C#);
+--   pragma Atomic (UDP_FDR3);
+--
+--   --  UDP TXVC
+--
+--   UDP_TXVC : Register_32;
+--   for UDP_TXVC'Address use System'To_Address (16#FFFB_0000#);
+--   pragma Atomic (UDP_TXVC);
+--
+--   --  PDC US1
+--
+--   US1_PTSR : Register_32; --  PDC Transfer Status Register
+--   for US1_PTSR'Address use System'To_Address (16#FFFC_4124#);
+--   pragma Atomic (US1_PTSR);
+--
+--   US1_TNCR : Register_32; --  Transmit Next Counter Register
+--   for US1_TNCR'Address use System'To_Address (16#FFFC_411C#);
+--   pragma Atomic (US1_TNCR);
+--
+--   US1_RNCR : Register_32; --  Receive Next Counter Register
+--   for US1_RNCR'Address use System'To_Address (16#FFFC_4114#);
+--   pragma Atomic (US1_RNCR);
+--
+--   US1_TCR : Register_32; --  Transmit Counter Register
+--   for US1_TCR'Address use System'To_Address (16#FFFC_410C#);
+--   pragma Atomic (US1_TCR);
+--
+--   US1_RCR : Register_32; --  Receive Counter Register
+--   for US1_RCR'Address use System'To_Address (16#FFFC_4104#);
+--   pragma Atomic (US1_RCR);
+--
+--   US1_PTCR : Register_32; --  PDC Transfer Control Register
+--   for US1_PTCR'Address use System'To_Address (16#FFFC_4120#);
+--   pragma Atomic (US1_PTCR);
+--
+--   US1_TNPR : Register_32; --  Transmit Next Pointer Register
+--   for US1_TNPR'Address use System'To_Address (16#FFFC_4118#);
+--   pragma Atomic (US1_TNPR);
+--
+--   US1_RNPR : Register_32; --  Receive Next Pointer Register
+--   for US1_RNPR'Address use System'To_Address (16#FFFC_4110#);
+--   pragma Atomic (US1_RNPR);
+--
+--   US1_TPR : Register_32; --  Transmit Pointer Register
+--   for US1_TPR'Address use System'To_Address (16#FFFC_4108#);
+--   pragma Atomic (US1_TPR);
+--
+--   US1_RPR : Register_32; --  Receive Pointer Register
+--   for US1_RPR'Address use System'To_Address (16#FFFC_4100#);
+--   pragma Atomic (US1_RPR);
+--
+--   --  US1
+--
+--   US1_XXR  : Register_32;   --  XON_XOFF Register
+--   for US1_XXR'Address use System'To_Address (16#FFFC_4048#);
+--   pragma Atomic (US1_XXR);
+--
+--   US1_RHR  : Register_32;   --  Receiver Holding Register
+--   for US1_RHR'Address use System'To_Address (16#FFFC_4018#);
+--   pragma Atomic (US1_RHR);
+--
+--   US1_IMR  : Register_32;   --  Interrupt Mask Register
+--   for US1_IMR'Address use System'To_Address (16#FFFC_4010#);
+--   pragma Atomic (US1_IMR);
+--
+--   US1_IER  : Register_32;   --  Interrupt Enable Register
+--   for US1_IER'Address use System'To_Address (16#FFFC_4008#);
+--   pragma Atomic (US1_IER);
+--
+--   US1_CR   : Register_32;   --  Control Register
+--   for US1_CR'Address use System'To_Address (16#FFFC_4000#);
+--   pragma Atomic (US1_CR);
+--
+--   US1_RTOR : Register_32;   --  Receiver Time-out Register
+--   for US1_RTOR'Address use System'To_Address (16#FFFC_4024#);
+--   pragma Atomic (US1_RTOR);
+--
+--   US1_THR  : Register_32;   --  Transmitter Holding Register
+--   for US1_THR'Address use System'To_Address (16#FFFC_401C#);
+--   pragma Atomic (US1_THR);
+--
+--   US1_CSR  : Register_32;   --  Channel Status Register
+--   for US1_CSR'Address use System'To_Address (16#FFFC_4014#);
+--   pragma Atomic (US1_CSR);
+--
+--   US1_IDR  : Register_32;   --  Interrupt Disable Register
+--   for US1_IDR'Address use System'To_Address (16#FFFC_400C#);
+--   pragma Atomic (US1_IDR);
+--
+--   US1_FIDI : Register_32;   --  FI_DI_Ratio Register
+--   for US1_FIDI'Address use System'To_Address (16#FFFC_4040#);
+--   pragma Atomic (US1_FIDI);
+--
+--   US1_BRGR : Register_32;   --  Baud Rate Generator Register
+--   for US1_BRGR'Address use System'To_Address (16#FFFC_4020#);
+--   pragma Atomic (US1_BRGR);
+--
+--   US1_TTGR : Register_32;   --  Transmitter Time-guard Register
+--   for US1_TTGR'Address use System'To_Address (16#FFFC_4028#);
+--   pragma Atomic (US1_TTGR);
+--
+--   US1_IF   : Register_32;   --  IRDA_FILTER Register
+--   for US1_IF'Address use System'To_Address (16#FFFC_404C#);
+--   pragma Atomic (US1_IF);
+--
+--   US1_NER  : Register_32;   --  Nb Errors Register
+--   for US1_NER'Address use System'To_Address (16#FFFC_4044#);
+--   pragma Atomic (US1_NER);
+--
+--   US1_MR   : Register_32;   --  Mode Register
+--   for US1_MR'Address use System'To_Address (16#FFFC_4004#);
+--   pragma Atomic (US1_MR);
+--
+--   US_RSTSTA  : constant := 2 **  8;  --  Reset Status Bits
+--   US_STTBRK  : constant := 2 **  9;  --  Start Break
+--   US_STPBRK  : constant := 2 ** 10;  --  Stop Break
+--   US_STTTO   : constant := 2 ** 11;  --  Start Time-out
+--   US_SENDA   : constant := 2 ** 12;  --  Send Address
+--   US_RSTIT   : constant := 2 ** 13;  --  Reset Iterations
+--   US_RSTNACK : constant := 2 ** 14;  --  Reset Non Acknowledge
+--   US_RETTO   : constant := 2 ** 15;  --  Rearm Time-out
+--   US_DTREN   : constant := 2 ** 16;  --  Data Terminal ready Enable
+--   US_DTRDIS  : constant := 2 ** 17;  --  Data Terminal ready Disable
+--   US_RTSEN   : constant := 2 ** 18;  --  Request to Send enable
+--   US_RTSDIS  : constant := 2 ** 19;  --  Request to Send Disable
+--
+--   US_CLKS_CLOCK   : constant := 0;        --  (USART) Clock
+--   US_CHRL_8_BITS: constant := 192;      --  (USART) Character Length: 8 bits
+--   US_PAR_NONE     : constant := 2048;     --  (DBGU) No Parity
+--   US_NBSTOP_1_BIT : constant := 0;        --  (USART) 1 stop bit
+--   US_OVER         : constant := 2 ** 19;  --  (USART) Over Sampling Mode
+--   US_SYNC       : constant := 2 ** 8;   --  (USART) Synchronous Mode Select
+--
+--   US_RSTRX   : constant := 2 ** 2;  --  (DBGU) Reset Receiver
+--   US_RSTTX   : constant := 2 ** 3;  --  (DBGU) Reset Transmitter
+--   US_RXEN    : constant := 2 ** 4;  --  (DBGU) Receiver Enable
+--   US_RXDIS   : constant := 2 ** 5;  --  (DBGU) Receiver Disable
+--   US_TXEN    : constant := 2 ** 6;  --  (DBGU) Transmitter Enable
+--   US_TXDIS   : constant := 2 ** 7;  --  (DBGU) Transmitter Disable
+--
+--   US_TIMEOUT : constant := 2 ** 8;  --  (USART) Receiver Time-out
+--
+--   US_USMODE_HWHSH : constant := 2;  --  (USART) Hardware Handshaking
+--
+--   PDC_RXTEN  : constant := 2 ** 0;  --  (PDC) Receiver Transfer Enable
+--   PDC_RXTDIS : constant := 2 ** 1;  --  (PDC) Receiver Transfer Disable
+--   PDC_TXTEN  : constant := 2 ** 8;  --  (PDC) Transmitter Transfer Enable
+--   PDC_TXTDIS : constant := 2 ** 9;  --  (PDC) Transmitter Transfer Disable
+--
+--   --  TC0
+--
+--   TC0_IMR    : Register_32; --  Interrupt Mask Register
+--   for TC0_IMR'Address use System'To_Address (16#FFFA_002C#);
+--   pragma Atomic (TC0_IMR);
+--
+--   TC0_IER    : Register_32; --  Interrupt Enable Register
+--   for TC0_IER'Address use System'To_Address (16#FFFA_0024#);
+--   pragma Atomic (TC0_IER);
+--
+--   TC0_RC     : Register_32; --  Register C
+--   for TC0_RC'Address use System'To_Address (16#FFFA_001C#);
+--   pragma Atomic (TC0_RC);
+--
+--   TC0_RA     : Register_32; --  Register A
+--   for TC0_RA'Address use System'To_Address (16#FFFA_0014#);
+--   pragma Atomic (TC0_RA);
+--
+--   TC0_CMR  : Register_32; --  Channel Mode Register (Capture/Waveform Mode)
+--   for TC0_CMR'Address use System'To_Address (16#FFFA_0004#);
+--   pragma Atomic (TC0_CMR);
+--
+--   TC0_IDR    : Register_32; --  Interrupt Disable Register
+--   for TC0_IDR'Address use System'To_Address (16#FFFA_0028#);
+--   pragma Atomic (TC0_IDR);
+--
+--   TC0_SR     : Register_32; --  Status Register
+--   for TC0_SR'Address use System'To_Address (16#FFFA_0020#);
+--   pragma Atomic (TC0_SR);
+--
+--   TC0_RB     : Register_32; --  Register B
+--   for TC0_RB'Address use System'To_Address (16#FFFA_0018#);
+--   pragma Atomic (TC0_RB);
+--
+--   TC0_CV     : Register_32; --  Counter Value
+--   for TC0_CV'Address use System'To_Address (16#FFFA_0010#);
+--   pragma Atomic (TC0_CV);
+--
+--   TC0_CCR    : Register_32; --  Channel Control Register
+--   for TC0_CCR'Address use System'To_Address (16#FFFA_0000#);
+--   pragma Atomic (TC0_CCR);
+--
+--   --  TC1
+--
+--   TC1_IMR : Register_32;  --  (TC1) Interrupt Mask Register
+--   for TC1_IMR'Address use System'To_Address (16#FFFA_006C#);
+--   pragma Atomic (TC1_IMR);
+--
+--   TC1_IER : Register_32;  --  (TC1) Interrupt Enable Register
+--   for TC1_IER'Address use System'To_Address (16#FFFA_0064#);
+--   pragma Atomic (TC1_IER);
+--
+--   TC1_RC  : Register_32;  --  (TC1) Register C
+--   for TC1_RC'Address use System'To_Address (16#FFFA_005C#);
+--   pragma Atomic (TC1_RC);
+--
+--   TC1_RA  : Register_32;  --  (TC1) Register A
+--   for TC1_RA'Address use System'To_Address (16#FFFA_0054#);
+--   pragma Atomic (TC1_RA);
+--
+--   TC1_CMR : Register_32;  --  (TC1) Channel Mode Register
+--   for TC1_CMR'Address use System'To_Address (16#FFFA_0044#);
+--   pragma Atomic (TC1_CMR);
+--
+--   TC1_IDR : Register_32;  --  (TC1) Interrupt Disable Register
+--   for TC1_IDR'Address use System'To_Address (16#FFFA_0068#);
+--   pragma Atomic (TC1_IDR);
+--
+--   TC1_SR  : Register_32;  --  (TC1) Status Register
+--   for TC1_SR'Address use System'To_Address (16#FFFA_0060#);
+--   pragma Atomic (TC1_SR);
+--
+--   TC1_RB  : Register_32;  --  (TC1) Register B
+--   for TC1_RB'Address use System'To_Address (16#FFFA_0058#);
+--   pragma Atomic (TC1_RB);
+--
+--   TC1_CV  : Register_32;  --  (TC1) Counter Value
+--   for TC1_CV'Address use System'To_Address (16#FFFA_0050#);
+--   pragma Atomic (TC1_CV);
+--
+--   TC1_CCR : Register_32;  --  (TC1) Channel Control Register
+--   for TC1_CCR'Address use System'To_Address (16#FFFA_0040#);
+--   pragma Atomic (TC1_CCR);
+--
+--   TC_CLKEN  : constant := 2 ** 0;  --  (TC) Counter Clock Enable Command
+--   TC_CLKDIS : constant := 2 ** 1;  --  (TC) Counter Clock Disable Command
+--   TC_SWTRG  : constant := 2 ** 2;  --  (TC) Software Trigger Command
+--
+--   TC_CLKS_TIMER_DIV1_CLOCK : constant := 0;
+--   TC_CLKS_TIMER_DIV2_CLOCK : constant := 1;
+--   TC_CLKS_TIMER_DIV3_CLOCK : constant := 2;
+--   TC_CLKS_TIMER_DIV4_CLOCK : constant := 3;
+--   TC_CLKS_TIMER_DIV5_CLOCK : constant := 4;
+--
+--   TC_CPCTRG          : constant := 2 ** 14;
+--   TC_WAVE            : constant := 2 ** 15;
+--   TC_LDRA            : constant := 196_608; -- 3 << 16
+--
+--   TC_WAVESEL_UP_AUTO : constant := 16_384;   --  auto trigger on RC Compare
+--   TC_ACPA_SET        : constant := 2 ** 16;  --  (TC) Effect: set
+--   TC_ACPC_CLEAR      : constant := 524_288;  --  (TC) Effect: clear
+--   TC_ASWTRG_SET      : constant := 2 ** 22;  --  (TC) Effect: set
+--
+--   TC_COVFS : constant := 2 ** 0; --  (TC) Counter Overflow
+--   TC_LOVRS : constant := 2 ** 1; --  (TC) Load Overrun
+--   TC_CPAS  : constant := 2 ** 2; --  (TC) RA Compare
+--   TC_CPBS  : constant := 2 ** 3; --  (TC) RB Compare
+--   TC_CPCS  : constant := 2 ** 4; --  (TC) RC Compare
+--   TC_LDRAS : constant := 2 ** 5; --  (TC) RA Loading
+--   TC_LDRBS : constant := 2 ** 6; --  (TC) RB Loading
+--   TC_ETRCS : constant := 2 ** 7; --  (TC) External Trigger
+--   TC_ETRGS : constant := 2 ** 16; --  (TC) Clock Enabling
+--   TC_MTIOA : constant := 2 ** 17; --  (TC) TIOA Mirror
+--   TC_MTIOB : constant := 2 ** 18; --  (TC) TIOA Mirror
+
+end System.BB.Peripherals.Registers;
