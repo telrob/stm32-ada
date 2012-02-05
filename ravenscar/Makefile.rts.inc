@@ -20,7 +20,6 @@ STM32_FILE+=$(wildcard $(RAVENSCAR_SRC)/stm32/STM32_USB_Device_Library/Core/src/
 STM32_FILE+=$(wildcard $(RAVENSCAR_SRC)/stm32/STM32_USB_OTG_Driver/src/usb_core.c)
 STM32_FILE+=$(wildcard $(RAVENSCAR_SRC)/stm32/STM32_USB_OTG_Driver/src/usb_dcd*.c)
 STM32_FILE+=$(wildcard $(RAVENSCAR_SRC)/stm32/usb/*.c)
-STM32_FILE+=$(GCC_SRC)/arit64.c
 STM32_TMP=$(filter-out %template.c,$(STM32_FILE))
 STM32_OBJ=$(notdir $(STM32_TMP:.c=.o))
 

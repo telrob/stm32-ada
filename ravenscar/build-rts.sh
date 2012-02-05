@@ -17,7 +17,8 @@ zfpsrc=$2
 #CP="ln -s"
 CP=cp
 
-GNATMAKE=`which arm-none-eabi-gnatmake`
+GNATMAKE=`which arm-none-eabi-gnatmake || true`
+
 if [ ! -x "$GNATMAKE" ]; then
   echo "Missing arm-none-eabi-gnatmake"
   exit 1
@@ -79,12 +80,12 @@ for f in memory_{set,copy,compare}.{ads,adb}; do
 done
 
 builddir=`mktemp -d`
-echo -e "RAVENSCAR_SRC=`pwd`\nGCC_SRC=`pwd`/$gnatsrc\nRTS_BASE=$objdir\ninclude \$(RAVENSCAR_SRC)/Makefile.rts.inc" >> $builddir/Makefile
+echo -e "RAVENSCAR_SRC=`pwd`\nRTS_BASE=$objdir\ninclude \$(RAVENSCAR_SRC)/Makefile.rts.inc" >> $builddir/Makefile
 make -C $builddir
 cp $builddir/libgnat.a $objdir/adalib/libgnat.a
 cp $builddir/libstm32.a $objdir/adalib/libstm32.a
 cp $builddir/*.ali $objdir/adalib
-rm -rf $builddir
+#rm -rf $builddir
 arm-none-eabi-ar rc $objdir/adalib/libgnarl.a
 
 exit 0

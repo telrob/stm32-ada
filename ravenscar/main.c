@@ -121,6 +121,32 @@ void __attribute__ ((weak)) __gnat_last_chance_handler (void)
     ;
 }
 
+// Adapted from "arti64.c"
+
+long long int __gnat_mulv64 (long long int x, long long int y)
+{
+  unsigned neg = (x >= 0) ^ (y >= 0);
+  long long unsigned xa = x >= 0 ? (long long unsigned) x
+                                 : -(long long unsigned) x;
+  long long unsigned ya = y >= 0 ? (long long unsigned) y
+                                 : -(long long unsigned) y;
+  unsigned xhi = (unsigned) (xa >> 32);
+  unsigned yhi = (unsigned) (ya >> 32);
+  unsigned xlo = (unsigned) xa;
+  unsigned ylo = (unsigned) ya;
+  long long unsigned mid
+    = xhi ? (long long unsigned) xhi * (long long unsigned) ylo
+         : (long long unsigned) yhi * (long long unsigned) xlo;
+  long long unsigned low = (long long unsigned) xlo * (long long unsigned) ylo;
+
+  if ((xhi && yhi) ||  mid + (low  >> 32) > 0x7fffffff + neg)
+    __gnat_last_chance_handler();
+
+  low += ((long long unsigned) (unsigned) mid) << 32;
+
+  return (long long int) (neg ? -low : low);
+}
+
 // Adapted from "stm32f4xx_rcc.c" and "misc.c" to make the RTS self contained.
 
 #define AIRCR_VECTKEY_MASK    ((uint32_t)0x05FA0000)
