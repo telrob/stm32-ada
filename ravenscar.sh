@@ -5,5 +5,7 @@ wget -c "http://libre2.adacore.com/ac_download/?ac_download&file=MD5%3Ab895640aa
 cd ../src
 tar xf ../download/zfp-support-2011-src.tgz
 tar xf ../download/gnat-gpl-2011-src.tgz
-cd ../ravenscar
+cd gnat-gpl-2011-src/
+patch -Np1 < ../../ravenscar.patch
+cd ../../ravenscar
 ./build-rts.sh ../src/gnat-gpl-2011-src/src/ada ../src/zfp-support-2011-src/zfp-src 2>&1 | tee ../ravenscar.log

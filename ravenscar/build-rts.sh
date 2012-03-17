@@ -44,6 +44,7 @@ make -f $gnatsrc/Makefile.hie RTS=ravenscar-sfp TARGET=none-elf \
 sed -i "s/s-bbtiev.ad[sb]//g" ./ravenscar.src
 sed -i "s/a-rttiev.ad[sb]//g" ./ravenscar.src
 sed -i "s/s-bbseou.ad[sb]//g" ./ravenscar.src
+sed -i "s/s-sssita.ad[sb]//g" ./ravenscar.src
 
 # Get them.
 . ./ravenscar.src

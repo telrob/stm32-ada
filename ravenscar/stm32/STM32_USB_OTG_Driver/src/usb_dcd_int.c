@@ -482,7 +482,10 @@ static uint32_t DCD_HandleInEP_ISR(USB_OTG_CORE_HANDLE *pdev)
       {
         
         DCD_WriteEmptyTxFifo(pdev , epnum);
-        
+        // TODO: Add a counter to do this only after a while.
+        fifoemptymsk = 0x1 << epnum;
+        USB_OTG_MODIFY_REG32(&pdev->regs.DREGS->DIEPEMPMSK, fifoemptymsk, 0);
+
         CLEAR_IN_EP_INTR(epnum, emptyintr);
       }
     }

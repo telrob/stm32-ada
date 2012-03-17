@@ -1,0 +1,90 @@
+diff --git a/src/ada/s-bbthqu.adb b/src/ada/s-bbthqu.adb
+index c5bc4e0..5cd4a59 100644
+--- a/src/ada/s-bbthqu.adb
++++ b/src/ada/s-bbthqu.adb
+@@ -91,9 +90,20 @@ package body System.BB.Threads.Queues is
+ 
+          --  The running thread is no longer the highest priority thread
+ 
+-         First_Thread_Table (CPU_Id) := Thread.Next;
++         if Thread = First_Thread_Table (CPU_Id) then
++            First_Thread_Table (CPU_Id) := Thread.Next;
++         else
++            Aux_Pointer := First_Thread_Table (CPU_Id);
++            while Aux_Pointer /= Null_Thread_Id
++              and then Aux_Pointer.Next /= Thread
++            loop
++               Aux_Pointer := Aux_Pointer.Next;
++            end loop;
++            pragma Assert (Aux_Pointer /= Null_Thread_Id);
++            Aux_Pointer.Next := Thread.Next;
++         end if;
+ 
+-         Aux_Pointer := First_Thread_Table (CPU_Id);
++         Aux_Pointer := Thread.Next;
+ 
+          --  FIFO_Within_Priorities dispatching policy. In ALRM D.2.2 it
+          --  is said that when the active priority is lowered due to the
+@@ -137,6 +147,7 @@ package body System.BB.Threads.Queues is
+    -------------
+ 
+    procedure Extract (Thread : Thread_Id) is
++      Aux_Pointer : Thread_Id;
+       CPU_Id : constant CPU := Get_CPU (Thread);
+ 
+    begin
+@@ -147,14 +158,25 @@ package body System.BB.Threads.Queues is
+       --  The only thread that can be extracted from the ready list is the one
+       --  that is currently executing (as a result of a delay or a protected
+       --  operation).
++      --  Because of PendSV, the above is not true.
+ 
+       pragma Assert
+         (Thread = Running_Thread_Table (CPU_Id)
+-          and then Thread = First_Thread_Table (CPU_Id)
+           and then Thread.State /= Runnable);
+ 
+-      First_Thread_Table (CPU_Id) := Thread.Next;
+-      Thread.Next := Null_Thread_Id;
++      if Thread = First_Thread_Table (CPU_Id) then
++         First_Thread_Table (CPU_Id) := Thread.Next;
++         Thread.Next := Null_Thread_Id;
++      else
++         Aux_Pointer := First_Thread_Table (CPU_Id);
++         while Aux_Pointer /= Null_Thread_Id
++           and then Aux_Pointer.Next /= Thread
++         loop
++            Aux_Pointer := Aux_Pointer.Next;
++         end loop;
++         pragma Assert (Aux_Pointer /= Null_Thread_Id);
++         Aux_Pointer.Next := Aux_Pointer.Next.Next;
++      end if;
+    end Extract;
+ 
+    -------------------------
+@@ -387,11 +409,23 @@ package body System.BB.Threads.Queues is
+       if Thread.Next /= Null_Thread_Id
+         and then Thread.Next.Active_Priority = Prio
+       then
+-         First_Thread_Table (CPU_Id) := Thread.Next;
++         if Thread = First_Thread_Table (CPU_Id) then
++            First_Thread_Table (CPU_Id) := Thread.Next;
++         else
++            Aux_Pointer := First_Thread_Table (CPU_Id);
++            while Aux_Pointer /= Null_Thread_Id
++              and then Aux_Pointer.Next /= Thread
++            loop
++               Aux_Pointer := Aux_Pointer.Next;
++            end loop;
++            pragma Assert (Aux_Pointer /= Null_Thread_Id);
++            Aux_Pointer.Next := Thread.Next;
++         end if;
++
++         Aux_Pointer := Thread.Next;
+ 
+          --  Look for the Aux_Pointer to insert the thread just after it
+ 
+-         Aux_Pointer  := First_Thread_Table (CPU_Id);
+          while Aux_Pointer.Next /= Null_Thread_Id
+            and then Prio = Aux_Pointer.Next.Active_Priority
+          loop

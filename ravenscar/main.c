@@ -50,6 +50,7 @@ void init_board() {
 
 void setup_systick(int frequency) {
   SysTick_Config(_RCC_GetClocksFreq() / frequency);
+  NVIC_SetPriority (PendSV_IRQn, (1<<__NVIC_PRIO_BITS) - 1);
 }
 
 int get_current_interrupt() {

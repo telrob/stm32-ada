@@ -1,6 +1,6 @@
 CROSS=arm-none-eabi-
 
-CFLAGS?=-Os -g -Wall -Wno-strict-aliasing -Werror -DCONFIG_STM32F4_DISCOVERY=1 \
+CFLAGS?=-O2 -g -Wall -Wno-strict-aliasing -Werror -DCONFIG_STM32F4_DISCOVERY=1 \
   -I$(RAVENSCAR_SRC)/stm32/STM32F4-Discovery \
   -I$(RAVENSCAR_SRC)/stm32/STM32F4xxFWLib/CMSIS/ST/STM32F4xx/Include \
   -I$(RAVENSCAR_SRC)/stm32/STM32F4xxFWLib/CMSIS/Include \
@@ -64,10 +64,10 @@ GCC_COMPILE=$(CROSS)gcc -c -o $@ $(CFLAGS) $<
 	$(GCC_COMPILE)
 
 %.o: $(RTS_BASE)/adainclude/%.adb
-	$(CROSS)gnatmake -a -c --RTS=$(RTS_BASE) -o $@ $(CFLAGS) $<
+	$(CROSS)gnatmake -gnata -a -c --RTS=$(RTS_BASE) -o $@ $(CFLAGS) $<
 
 %.o: $(RTS_BASE)/adainclude/%.ads
-	$(CROSS)gnatmake -a -c --RTS=$(RTS_BASE) -o $@ $(CFLAGS) $<
+	$(CROSS)gnatmake -gnata -a -c --RTS=$(RTS_BASE) -o $@ $(CFLAGS) $<
 
 clean:
 	$(RM) -f *.o *~ b~* $(PRG) *.ali *.map *.owav

@@ -134,8 +134,7 @@ package body System.BB.CPU_Primitives is
 
    procedure Disable_Interrupts is
    begin
-      System.Machine_Code.Asm ("cpsid i" & ASCII.LF & ASCII.HT &
-                               "cpsid f",
+      System.Machine_Code.Asm ("cpsid i",
                                Clobber => "memory",
                                Volatile => True);
    end Disable_Interrupts;
@@ -149,8 +148,7 @@ package body System.BB.CPU_Primitives is
    is
    begin
       if Level = 0 then
-         System.Machine_Code.Asm ("cpsie i" & ASCII.LF & ASCII.HT &
-                                  "cpsie f",
+         System.Machine_Code.Asm ("cpsie i",
                                   Clobber => "memory",
                                   Volatile => True);
       end if;

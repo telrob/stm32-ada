@@ -161,6 +161,8 @@ package body System.BB.Interrupts is
 
       --  Store the interrupt being handled
 
+      Protection.Enter_Kernel;
+
       Interrupt_Being_Handled := Interrupt;
 
       --  Then, we must set the appropriate software priority corresponding
@@ -170,11 +172,15 @@ package body System.BB.Interrupts is
       Threads.Queues.Change_Priority (Self_Id,
          Priority_Of_Interrupt (Interrupt));
 
+      Protection.Leave_Kernel;
+
       Interrupt_Handlers (Interrupt).all (Interrupt);
 
       --  Restore the software priority to the state before the interrupt
       --  happened. Interrupt unmasking is not done here (it will be done
       --  later by the interrupt epilogue).
+
+      Protection.Enter_Kernel;
 
       Threads.Queues.Change_Priority (Self_Id, Caller_Priority);
 
@@ -182,12 +188,7 @@ package body System.BB.Interrupts is
 
       Interrupt_Being_Handled := Previous_Interrupt_Level;
 
---      TODO: Ack interrupt
-
       Protection.Leave_Kernel;
---      if Context_Switch_Needed then
---         CPU_Primitives.Context_Switch;
---      end if;
    end Irq_Handler;
 
    ----------------------------
