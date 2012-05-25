@@ -42,6 +42,7 @@
   .type pendsv_handler,%function
 pendsv_handler:
   stmdb sp!, {r4-r11}  /* Save the remaining registers. */
+  cpsid i
   ldr   ip, Lrun
   ldr   ip, [ip]
   str   sp, [ip]       /* Save the new top of stack into the first member of the TCB. */
@@ -53,6 +54,7 @@ pendsv_handler:
   str     ip, [r0]
 
   ldr   sp, [ip]       /* Load the new stack */
+  cpsie i
   ldmia sp!, {r4-r11}  /* Pop the registers. */
   bx lr
 
