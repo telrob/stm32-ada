@@ -38,10 +38,11 @@ mkdir -p build/binutils
 mkdir -p build/gcc
 mkdir -p build/gdb
 cd build/binutils
-(../../src/binutils-2.22.51/configure --target=arm-none-eabi --prefix=$INSTALL_PREFIX && make && make install) 2>&1 | tee make.log
+(../../src/binutils-2.22.51/configure --target=arm-none-eabi --prefix=$INSTALL_PREFIX && make -j9 && make install) 2>&1 | tee make.log
 cd ../gcc
-(../../src/gcc-4.6.2/configure --target=arm-none-eabi --with-cpu=cortex-m4 --with-mode=thumb --prefix=$INSTALL_PREFIX --with-gnu-as --with-newlib --verbose --enable-threads --enable-languages=c,c++,ada && make && make install) 2>&1 | tee make.log
+(../../src/gcc-4.6.2/configure --target=arm-none-eabi --with-cpu=cortex-m4 --with-mode=thumb --prefix=$INSTALL_PREFIX --with-gnu-as --with-newlib --verbose --enable-threads --enable-languages=c,c++,ada && make -j9 && make install) 2>&1 | tee make.log
 cd ../gdb
 sudo apt-get install libncurses5-dev texinfo
-(../../src/gdb-7.3.1/configure --target=arm-none-eabi --prefix=$INSTALL_PREFIX && make && make install) 2>&1 | tee make.log
+(../../src/gdb-7.3.1/configure --target=arm-none-eabi --prefix=$INSTALL_PREFIX && make -j9 && make install) 2>&1 | tee make.log
+cd ../..
 PATH=$INSTALL_PREFIX/bin:$PATH ./ravenscar.sh
