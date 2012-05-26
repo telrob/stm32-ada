@@ -1,7 +1,7 @@
 #!/bin/sh
 cd download
-wget -c "http://libre2.adacore.com/ac_download/?ac_download&file=MD5%3Aab851f1cef3e9a92809333b6f289c477" -O zfp-support-2011-src.tgz
-wget -c "http://libre2.adacore.com/ac_download/?ac_download&file=MD5%3Ab895640aac5c2964e7ed65f8b3cc5c35" -O gnat-gpl-2011-src.tgz
+wget -c "http://mirrors.cdn.adacore.com/art/fea42ac613f142431a304a950ec9da0dc3a9318d" -O zfp-support-2011-src.tgz
+wget -c "http://mirrors.cdn.adacore.com/art/d5bfc6f4b0284b14d961097f37f666b5e6b9100e" -O gnat-gpl-2011-src.tgz
 cd ../src
 tar xf ../download/zfp-support-2011-src.tgz
 tar xf ../download/gnat-gpl-2011-src.tgz
