@@ -1,0 +1,3 @@
+In order to test the toolchain, try to compile test.adb by executing:
+
+arm-none-eabi-gnatmake --RTS=rts-raven test -largs -T ../ravenscar/kernel_samba.ld
