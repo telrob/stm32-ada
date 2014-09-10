@@ -1,4 +1,5 @@
-INSTALL_PREFIX?=/opt/stm32Ada
+INSTALL_PREFIX?=/tmp/stm32
+CC?=gcc-4.6
 WGET = wget -c -P download
 TAR = tar -C src -xf
 BUILD_MAKE = make -j9
@@ -19,9 +20,9 @@ PWD = `pwd`
 	$(MKDIR) build/gdb
 	touch $@
 
-all: stamps/install/gcc stamps/install/gdb
+all: stamps/install/gcc stamps/install/gdb stamps/install/ravenscar
 
-.downloaded: stamps/download/gcc_ada stamps/download/gcc_core stamps/download/gcc_gpp stamps/download/binutils stamps/download/gmp stamps/download/mpfr stamps/download/mpc stamps/download/ppl stamps/download/cloog stamps/download/newlib stamps/download/gdb
+.downloaded: stamps/download/gcc_ada stamps/download/gcc_core stamps/download/gcc_gpp stamps/download/binutils stamps/download/gmp stamps/download/mpfr stamps/download/mpc stamps/download/ppl stamps/download/cloog stamps/download/newlib stamps/download/gdb stamps/download/gnat_2011 stamps/download/zfp
 	touch $@
 
 .checked: .downloaded 
@@ -69,7 +70,15 @@ stamps/download/newlib: .directories
 	touch $@
 
 stamps/download/gdb: .directories
-	$(WGET) http://ftp.gnu.org/gnu/gdb/gdb-7.3.1.tar.bz2
+	$(WGET) http://ftp.gnu.org/gnu/gdb/gdb-7.8.tar.gz
+	touch $@
+
+stamps/download/gnat_2011: .directories
+	$(WGET) "http://mirrors.cdn.adacore.com/art/d5bfc6f4b0284b14d961097f37f666b5e6b9100e" -O gnat-gpl-2011-src.tgz
+	touch $@
+
+stamps/download/zfp: .directories
+	$(WGET) "http://mirrors.cdn.adacore.com/art/fea42ac613f142431a304a950ec9da0dc3a9318d" -O zfp-support-2011-src.tgz
 	touch $@
 
 # Extraction
@@ -77,48 +86,56 @@ stamps/download/gdb: .directories
 stamps/extract/gcc: stamps/extract/gcc_ada stamps/extract/gcc_core stamps/extract/gcc_gpp
 	touch $@
 
-stamps/extract/gcc_ada: .checked src
+stamps/extract/gcc_ada: .checked
 	$(TAR) download/gcc-ada-4.6.2.tar.bz2
 	touch $@
 
-stamps/extract/gcc_core: .checked src
+stamps/extract/gcc_core: .checked
 	$(TAR) download/gcc-core-4.6.2.tar.bz2
 	touch $@
 
-stamps/extract/gcc_gpp: .checked src
+stamps/extract/gcc_gpp: .checked
 	$(TAR) download/gcc-g++-4.6.2.tar.bz2
 	touch $@
 
-stamps/extract/binutils: .checked src 
+stamps/extract/binutils: .checked
 	$(TAR) download/binutils-2.22.51.tar.bz2
 	touch $@
 
-stamps/extract/gmp: .checked src
+stamps/extract/gmp: .checked
 	$(TAR) download/gmp-4.3.2.tar.bz2
 	touch $@
 
-stamps/extract/mpfr: .checked src
+stamps/extract/mpfr: .checked
 	$(TAR) download/mpfr-2.4.2.tar.bz2
 	touch $@
 
-stamps/extract/mpc: .checked src
+stamps/extract/mpc: .checked
 	$(TAR) download/mpc-0.8.2.tar.gz
 	touch $@
 
-stamps/extract/ppl: .checked src
+stamps/extract/ppl: .checked
 	$(TAR) download/ppl-0.11.2.tar.bz2
 	touch $@
 
-stamps/extract/cloog: .checked src
+stamps/extract/cloog: .checked
 	$(TAR) download/cloog-ppl-0.15.11.tar.gz
 	touch $@
 
-stamps/extract/newlib: .checked src
+stamps/extract/newlib: .checked
 	$(TAR) download/newlib-1.19.0.tar.gz
 	touch $@
 
-stamps/extract/gdb: .checked src
-	$(TAR) download/gdb-7.3.1.tar.bz2
+stamps/extract/gdb: .checked
+	$(TAR) download/gdb-7.8.tar.gz
+	touch $@
+
+stamps/extract/zfp: .checked
+	$(TAR) download/zfp-support-2011-src.tgz 
+	touch $@
+
+stamps/extract/gnat_2011: .checked
+	$(TAR) download/gnat-gpl-2011-src.tgz
 	touch $@
 
 stamps/install/binutils: stamps/build/binutils
@@ -142,6 +159,13 @@ stamps/patched/gcc: stamps/extract/gcc stamps/extract/gmp stamps/extract/mpfr st
 	ln -sf $(PWD)/src/newlib-1.19.0/newlib src/gcc-4.6.2/newlib
 	touch $@
 
+stamps/patched/gnat_2011: stamps/extract/gnat_2011
+	patch --directory=src/gnat-gpl-2011-src -Np1 < ravenscar.patch
+	touch $@
+
+stamps/install/ravenscar: stamps/extract/gnat_2011 stamps/extract/zfp
+	cd ravenscar && ./build-rts.sh ../src/gnat-gpl-2011-src/src/ada ../src/zfp-support-2011-src/zfp-src	
+
 # We face lots of issues building the GCC and GDB docs. We instruct GCC not to
 # build the doc... but it just does not want to listen. Hence this ugly hack, 
 # in which we pretend the makeinfo command is a non-existent file. Configure
@@ -161,8 +185,8 @@ stamps/install/gcc: stamps/build/gcc
 
 
 #sudo apt-get install liddbncurses5-dev texinfo
-stamps/configure/gdb: stamps/extract/gdb stamps/install/gcc build/gdb
-	cd build/gdb && MAKEINFO=/usr/blahblahblah ../../src/gdb-7.3.1/configure --target=arm-none-eabi --prefix=$(INSTALL_PREFIX)
+stamps/configure/gdb: stamps/extract/gdb stamps/install/gcc
+	cd build/gdb && ../../src/gdb-7.8/configure --target=arm-none-eabi --prefix=$(INSTALL_PREFIX)
 	touch $@
 
 stamps/build/gdb: stamps/configure/gdb
