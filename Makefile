@@ -10,6 +10,7 @@ PWD = `pwd`
 .directories:
 	$(MKDIR) src
 	$(MKDIR) stamps/install
+	$(MKDIR) stamps/checked
 	$(MKDIR) stamps/build
 	$(MKDIR) stamps/extract
 	$(MKDIR) stamps/download
@@ -22,11 +23,8 @@ PWD = `pwd`
 
 all: stamps/install/gcc stamps/install/gdb stamps/install/ravenscar
 
-.downloaded: stamps/download/gcc_ada stamps/download/gcc_core stamps/download/gcc_gpp stamps/download/binutils stamps/download/gmp stamps/download/mpfr stamps/download/mpc stamps/download/ppl stamps/download/cloog stamps/download/newlib stamps/download/gdb stamps/download/gnat_2011 stamps/download/zfp
-	touch $@
-
-.checked: .downloaded 
-	md5sum --check --strict md5sums
+stamps/checked/%: stamps/download/% checksums/%
+	md5sum --check --strict checksums/$*
 	touch $@
 
 stamps/download/gcc_ada: .directories
@@ -81,60 +79,68 @@ stamps/download/zfp: .directories
 	$(WGET) "http://mirrors.cdn.adacore.com/art/fea42ac613f142431a304a950ec9da0dc3a9318d" -O zfp-support-2011-src.tgz
 	touch $@
 
+stamps/download/stm32: .directories
+	$(WGET) "http://www.st.com/st-web-ui/static/active/en/st_prod_software_internet/resource/technical/software/firmware/stsw-stm32068.zip"
+	touch $@
+
+stamps/extract/stm32: stamps/checked/stm32
+	unzip -f download/stsw-stm32068.zip -d src
+	touch $@
+
 # Extraction
 
 stamps/extract/gcc: stamps/extract/gcc_ada stamps/extract/gcc_core stamps/extract/gcc_gpp
 	touch $@
 
-stamps/extract/gcc_ada: .checked
+stamps/extract/gcc_ada: stamps/checked/gcc_ada
 	$(TAR) download/gcc-ada-4.6.2.tar.bz2
 	touch $@
 
-stamps/extract/gcc_core: .checked
+stamps/extract/gcc_core: stamps/checked/gcc_core
 	$(TAR) download/gcc-core-4.6.2.tar.bz2
 	touch $@
 
-stamps/extract/gcc_gpp: .checked
+stamps/extract/gcc_gpp: stamps/checked/gcc_gpp
 	$(TAR) download/gcc-g++-4.6.2.tar.bz2
 	touch $@
 
-stamps/extract/binutils: .checked
+stamps/extract/binutils: stamps/checked/binutils
 	$(TAR) download/binutils-2.22.51.tar.bz2
 	touch $@
 
-stamps/extract/gmp: .checked
+stamps/extract/gmp: stamps/checked/gmp
 	$(TAR) download/gmp-4.3.2.tar.bz2
 	touch $@
 
-stamps/extract/mpfr: .checked
+stamps/extract/mpfr: stamps/checked/mpfr
 	$(TAR) download/mpfr-2.4.2.tar.bz2
 	touch $@
 
-stamps/extract/mpc: .checked
+stamps/extract/mpc: stamps/checked/mpc
 	$(TAR) download/mpc-0.8.2.tar.gz
 	touch $@
 
-stamps/extract/ppl: .checked
+stamps/extract/ppl: stamps/checked/ppl
 	$(TAR) download/ppl-0.11.2.tar.bz2
 	touch $@
 
-stamps/extract/cloog: .checked
+stamps/extract/cloog: stamps/checked/cloog
 	$(TAR) download/cloog-ppl-0.15.11.tar.gz
 	touch $@
 
-stamps/extract/newlib: .checked
+stamps/extract/newlib: stamps/checked/newlib
 	$(TAR) download/newlib-1.19.0.tar.gz
 	touch $@
 
-stamps/extract/gdb: .checked
+stamps/extract/gdb: stamps/checked/gdb
 	$(TAR) download/gdb-7.8.tar.gz
 	touch $@
 
-stamps/extract/zfp: .checked
+stamps/extract/zfp: stamps/checked/zfp
 	$(TAR) download/zfp-support-2011-src.tgz 
 	touch $@
 
-stamps/extract/gnat_2011: .checked
+stamps/extract/gnat_2011: stamps/checked/gnat_2011
 	$(TAR) download/gnat-gpl-2011-src.tgz
 	touch $@
 
@@ -163,8 +169,9 @@ stamps/patched/gnat_2011: stamps/extract/gnat_2011
 	patch --directory=src/gnat-gpl-2011-src -Np1 < ravenscar.patch
 	touch $@
 
-stamps/install/ravenscar: stamps/extract/gnat_2011 stamps/extract/zfp
-	cd ravenscar && ./build-rts.sh ../src/gnat-gpl-2011-src/src/ada ../src/zfp-support-2011-src/zfp-src	
+stamps/install/ravenscar: stamps/extract/gnat_2011 stamps/extract/zfp stamps/extract/stm32
+	cd ravenscar && PATH=$(INSTALL_PREFIX)/bin:$(PATH) ./build-rts.sh ../src/gnat-gpl-2011-src/src/ada ../src/zfp-support-2011-src/zfp-src
+	touch $@	
 
 # We face lots of issues building the GCC and GDB docs. We instruct GCC not to
 # build the doc... but it just does not want to listen. Hence this ugly hack, 
@@ -195,6 +202,7 @@ stamps/build/gdb: stamps/configure/gdb
 
 stamps/install/gdb: stamps/build/gdb
 	$(INSTALL_MAKE) -C build/gdb install
+	touch $@
 
 
 #PATH=$INSTALL_PREFIX/bin:$PATH ./ravenscar.sh
