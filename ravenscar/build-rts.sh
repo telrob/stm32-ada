@@ -24,22 +24,24 @@ if [ ! -x "$GNATMAKE" ]; then
   exit 1
 fi
 
-objdir=`dirname $GNATMAKE`/../lib/gcc/arm-none-eabi/4.6.2/rts-raven
+target_objdir=`dirname $GNATMAKE`/../lib/gcc/arm-none-eabi/4.6.2/rts-raven
+
+objdir=`mktemp -d`
+
 echo "Building RTS in '$objdir'"
 
-if [ -d $objdir ]; then
-  echo "Object dir $objdir already exists"
+if [ -d $target_objdir ]; then
+  echo "Object dir $target_objdir already exists"
   exit 1
 fi
 
 # Create directories.
-mkdir $objdir
 mkdir $objdir/adainclude
 mkdir $objdir/adalib
 
 # Build list of sources.
 make -f $gnatsrc/Makefile.hie RTS=ravenscar-sfp TARGET=none-elf \
- GNAT_SRC_DIR=$gnatsrc show-sources > ravenscar.src
+ GNAT_SRC_DIR=$gnatsrc show-sources |grep -v "^make"  > ravenscar.src
 
 sed -i "s/s-bbtiev.ad[sb]//g" ./ravenscar.src
 sed -i "s/a-rttiev.ad[sb]//g" ./ravenscar.src
@@ -88,5 +90,7 @@ cp $builddir/libstm32.a $objdir/adalib/libstm32.a
 cp $builddir/*.ali $objdir/adalib
 #rm -rf $builddir
 arm-none-eabi-ar rc $objdir/adalib/libgnarl.a
+
+mv $objdir $target_objdir
 
 exit 0
