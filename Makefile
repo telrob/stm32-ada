@@ -84,7 +84,11 @@ stamps/download/stm32: .directories
 	touch $@
 
 stamps/extract/stm32: stamps/checked/stm32
-	unzip -f download/stsw-stm32068.zip -d src
+	unzip -o download/stsw-stm32068.zip -d src
+	touch $@
+
+stamps/patched/stm32: stamps/extract/stm32
+	patch --directory=src/STM32F4-Discovery_FW_V1.1.0 -Np1 < STM32F4_Disc_FW.patch
 	touch $@
 
 # Extraction
@@ -169,7 +173,7 @@ stamps/patched/gnat_2011: stamps/extract/gnat_2011
 	patch --directory=src/gnat-gpl-2011-src -Np1 < ravenscar.patch
 	touch $@
 
-stamps/install/ravenscar: stamps/extract/gnat_2011 stamps/extract/zfp stamps/extract/stm32
+stamps/install/ravenscar: stamps/extract/gnat_2011 stamps/extract/zfp stamps/patched/stm32
 	cd ravenscar && PATH=$(INSTALL_PREFIX)/bin:$(PATH) ./build-rts.sh ../src/gnat-gpl-2011-src/src/ada ../src/zfp-support-2011-src/zfp-src
 	touch $@	
 
